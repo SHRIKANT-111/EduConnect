@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Live Class — EduConnect</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Poppins',sans-serif;background:#1a1a2e;color:#fff;height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+header{background:rgba(255,255,255,0.05);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,0.1);}
+.h-left{display:flex;align-items:center;gap:12px;}
+.h-logo{font-size:1.1rem;font-weight:800;color:#667eea;}
+.h-session{font-size:0.85rem;color:#aaa;} 
+.h-live{background:#ff4757;color:#fff;padding:4px 12px;border-radius:50px;font-size:0.72rem;font-weight:700;animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.6;}}
+.h-timer{font-size:0.85rem;color:#ffd200;font-weight:600;}
+.main{display:flex;flex:1;overflow:hidden;}
+/* VIDEO AREA */
+.video-area{flex:1;padding:16px;display:flex;flex-direction:column;gap:12px;overflow:hidden;}
+#video-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;flex:1;overflow-y:auto;}
+.video-box{position:relative;background:#16213e;border-radius:14px;overflow:hidden;aspect-ratio:16/9;}
+.video-box video{width:100%;height:100%;object-fit:cover;}
+.video-label{position:absolute;bottom:10px;left:10px;background:rgba(0,0,0,0.7);padding:4px 10px;border-radius:6px;font-size:0.78rem;font-weight:600;}
+.video-label .role-tag{color:#667eea;margin-left:4px;font-size:0.7rem;}
+.hand-indicator{position:absolute;top:10px;right:10px;font-size:1.4rem;display:none;}
+.hand-indicator.show{display:block;animation:bounce 0.5s infinite alternate;}
+@keyframes bounce{from{transform:translateY(0);}to{transform:translateY(-6px);}}
+.no-video{width:100%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;}
+.avatar-big{width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;font-size:1.8rem;font-weight:700;}
+/* CONTROLS */
+.controls{display:flex;align-items:center;justify-content:center;gap:12px;padding:14px;background:rgba(255,255,255,0.04);border-top:1px solid rgba(255,255,255,0.08);}
+.ctrl-btn{width:50px;height:50px;border-radius:50%;border:none;cursor:pointer;font-size:1rem;transition:all 0.3s;display:flex;align-items:center;justify-content:center;}
+.ctrl-btn.on{background:rgba(255,255,255,0.15);color:#fff;}
+.ctrl-btn.off{background:#ff4757;color:#fff;}
+.ctrl-btn:hover{transform:scale(1.1);}
+.ctrl-btn.leave{background:#ff4757;color:#fff;width:auto;padding:0 22px;border-radius:25px;font-size:0.85rem;font-weight:700;gap:7px;}
+.ctrl-btn.hand-btn{background:rgba(255,255,255,0.15);color:#ffd200;}
+.ctrl-btn.hand-btn.raised{background:#ffd200;color:#1a1a2e;}
+/* SIDEBAR */
+.sidebar{width:300px;background:rgba(255,255,255,0.04);border-left:1px solid rgba(255,255,255,0.08);display:flex;flex-direction:column;}
+.sb-tabs{display:flex;border-bottom:1px solid rgba(255,255,255,0.08);}
+.sb-tab{flex:1;padding:13px;text-align:center;border:none;background:transparent;color:#aaa;cursor:pointer;font-family:'Poppins',sans-serif;font-size:0.82rem;font-weight:600;transition:all 0.3s;}
+.sb-tab.active{color:#667eea;border-bottom:2px solid #667eea;}
+.sb-panel{display:none;flex:1;overflow-y:auto;padding:14px;}
+.sb-panel.active{display:flex;flex-direction:column;}
+/* PARTICIPANTS */
+.participant{display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;background:rgba(255,255,255,0.04);margin-bottom:8px;}
+.p-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.9rem;flex-shrink:0;}
+.p-name{font-size:0.85rem;font-weight:600;}
+.p-role{font-size:0.72rem;color:#667eea;}
+/* CHAT */
+#chat-messages{flex:1;overflow-y:auto;margin-bottom:12px;display:flex;flex-direction:column;gap:8px;}
+.chat-msg{padding:10px 13px;border-radius:12px;background:rgba(255,255,255,0.06);max-width:100%;}
+.chat-msg .cm-name{font-size:0.72rem;font-weight:700;color:#667eea;margin-bottom:3px;}
+.chat-msg .cm-text{font-size:0.85rem;color:#ddd;}
+.chat-msg .cm-time{font-size:0.68rem;color:#666;margin-top:3px;}
+.chat-msg.mine{background:rgba(102,126,234,0.2);}
+.chat-input-row{display:flex;gap:8px;}
+.chat-input-row input{flex:1;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.12);border-radius:10px;padding:10px 13px;color:#fff;font-family:'Poppins',sans-serif;font-size:0.85rem;outline:none;}
+.chat-input-row input::placeholder{color:#666;}
+.chat-input-row input:focus{border-color:#667eea;}
+.chat-send{background:#667eea;border:none;border-radius:10px;color:#fff;padding:10px 14px;cursor:pointer;font-size:0.9rem;transition:all 0.3s;}
+.chat-send:hover{background:#764ba2;}
+/* ATTENDANCE TIMER */
+.att-bar-wrap{background:rgba(255,255,255,0.05);border-radius:10px;padding:12px 16px;margin-bottom:12px;}
+.att-bar-label{font-size:0.75rem;color:#aaa;margin-bottom:6px;display:flex;justify-content:space-between;}
+.att-bar{height:6px;background:rgba(255,255,255,0.1);border-radius:50px;overflow:hidden;}
+.att-fill{height:100%;background:linear-gradient(90deg,#667eea,#38ef7d);border-radius:50px;transition:width 1s linear;}
+.att-status{font-size:0.75rem;margin-top:6px;color:#38ef7d;font-weight:600;}
+</style>
+</head>
+<body>
+<header>
+  <div class="h-left">
+    <div class="h-logo"><i class="fas fa-graduation-cap"></i> EduConnect</div>
+    <div class="h-session" id="sessionTitle">Loading...</div>
+    <span class="h-live">🔴 LIVE</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:16px;">
+    <div class="h-timer" id="timer">00:00</div>
+    <div style="font-size:0.82rem;color:#aaa;" id="myName">—</div>
+  </div>
+</header>
+
+<div class="main">
+  <div class="video-area">
+    <div id="video-grid"></div>
+    <div class="controls">
+      <button class="ctrl-btn on" id="btn-mic" onclick="toggleMic()" title="Mic"><i class="fas fa-microphone"></i></button>
+      <button class="ctrl-btn on" id="btn-cam" onclick="toggleCam()" title="Camera"><i class="fas fa-video"></i></button>
+      <button class="ctrl-btn hand-btn" id="btn-hand" onclick="toggleHand()" title="Raise Hand"><i class="fas fa-hand-paper"></i></button>
+      <button class="ctrl-btn leave" onclick="leaveClass()"><i class="fas fa-phone-slash"></i> Leave</button>
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <div class="sb-tabs">
+      <button class="sb-tab active" onclick="switchSbTab('participants')"><i class="fas fa-users"></i> People</button>
+      <button class="sb-tab" onclick="switchSbTab('chat')"><i class="fas fa-comment"></i> Chat</button>
+    </div>
+    <div class="sb-panel active" id="sb-participants">
+      <div class="att-bar-wrap">
+        <div class="att-bar-label"><span>Attendance Timer</span><span id="att-time">0 / 40 min</span></div>
+        <div class="att-bar"><div class="att-fill" id="att-fill" style="width:0%"></div></div>
+        <div class="att-status" id="att-status">⏳ Stay 40 min to mark attendance</div>
+      </div>
+      <div id="participants-list"></div>
+    </div>
+    <div class="sb-panel" id="sb-chat">
+      <div id="chat-messages"></div>
+      <div class="chat-input-row">
+        <input type="text" id="chat-input" placeholder="Type a message..." onkeydown="if(event.key==='Enter') sendChat()"/>
+        <button class="chat-send" onclick="sendChat()"><i class="fas fa-paper-plane"></i></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+const API = 'http://localhost:5000/api';
+const token = localStorage.getItem('token');
+const user = JSON.parse(localStorage.getItem('user') || 'null');
+
+if (!token || !user) { window.location.href = '/login.html'; }
+
+const params = new URLSearchParams(window.location.search);
+const sessionId = params.get('session');
+
+document.getElementById('myName').textContent = user.full_name;
+
+const socket = io('http://localhost:5000');
+const peers = {};
+let localStream = null;
+let micOn = true, camOn = true, handRaised = false;
+let timerInterval = null, startTime = Date.now();
+let attMinutes = 0, attMarked = false;
+const roomId = 'session_' + sessionId;
+
+const config = {
+    iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' }
+    ]
+};
+
+// Load session info
+async function loadSession() {
+    try {
+        const res = await fetch(`${API}/classes/session/${sessionId}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (data.success) document.getElementById('sessionTitle').textContent = data.session.title;
+    } catch(e) {
+        document.getElementById('sessionTitle').textContent = 'Live Class';
+    }
+}
+
+// Start timer
+function startTimer() {
+    timerInterval = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - startTime) / 1000);
+        const m = Math.floor(elapsed / 60).toString().padStart(2, '0');
+        const s = (elapsed % 60).toString().padStart(2, '0');
+        document.getElementById('timer').textContent = `${m}:${s}`;
+
+        attMinutes = elapsed / 60;
+        const pct = Math.min((attMinutes / 40) * 100, 100);
+        document.getElementById('att-fill').style.width = pct + '%';
+        document.getElementById('att-time').textContent = `${Math.floor(attMinutes)} / 40 min`;
+
+        if (attMinutes >= 40 && !attMarked) {
+            attMarked = true;
+            document.getElementById('att-status').textContent = '✅ Attendance Marked!';
+            markAttendance();
+        }
+    }, 1000);
+}
+
+async function markAttendance() {
+    try {
+        // Step 1 — Record that student joined
+        await fetch(`${API}/attendance/join`, {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ session_id: sessionId })
+        });
+
+        // Step 2 — Mark as present
+        const res = await fetch(`${API}/attendance/mark-present`, {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ session_id: sessionId })
+        });
+        const data = await res.json();
+
+        if(data.success){
+            console.log('✅ Attendance marked successfully!');
+            document.getElementById('att-status').textContent = '✅ Attendance Marked!';
+            document.getElementById('att-status').style.color = '#38ef7d';
+        } else {
+            console.error('Attendance failed:', data.message);
+        }
+    } catch(e) {
+        console.error('Attendance error:', e);
+    }
+}
+
+// Add video box to grid
+function addVideoBox(socketId, name, role, stream, isLocal) {
+    const existing = document.getElementById('vbox_' + socketId);
+    if (existing) return;
+
+    const box = document.createElement('div');
+    box.className = 'video-box';
+    box.id = 'vbox_' + socketId;
+
+    if (stream) {
+        const video = document.createElement('video');
+        video.autoplay = true;
+        video.playsInline = true;
+        if (isLocal) video.muted = true;
+        video.srcObject = stream;
+        box.appendChild(video);
+    } else {
+        const noVid = document.createElement('div');
+        noVid.className = 'no-video';
+        noVid.innerHTML = `<div class="avatar-big">${name[0].toUpperCase()}</div><div style="font-size:0.85rem;color:#aaa">${name}</div>`;
+        box.appendChild(noVid);
+    }
+
+    const label = document.createElement('div');
+    label.className = 'video-label';
+    label.innerHTML = `${name} ${isLocal ? '(You)' : ''}<span class="role-tag">${role}</span>`;
+    box.appendChild(label);
+
+    const hand = document.createElement('div');
+    hand.className = 'hand-indicator';
+    hand.id = 'hand_' + socketId;
+    hand.textContent = '✋';
+    box.appendChild(hand);
+
+    document.getElementById('video-grid').appendChild(box);
+    updateParticipants();
+}
+
+function removeVideoBox(socketId) {
+    const box = document.getElementById('vbox_' + socketId);
+    if (box) box.remove();
+    if (peers[socketId]) { peers[socketId].close(); delete peers[socketId]; }
+    updateParticipants();
+}
+
+// WebRTC - create peer connection
+function createPeer(targetSocketId, isInitiator) {
+    const pc = new RTCPeerConnection(config);
+    peers[targetSocketId] = pc;
+
+    if (localStream) {
+        localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+    }
+
+    pc.ontrack = (e) => {
+        const existing = document.getElementById('vbox_' + targetSocketId);
+        if (existing) {
+            const video = existing.querySelector('video');
+            if (video) { video.srcObject = e.streams[0]; return; }
+            const noVid = existing.querySelector('.no-video');
+            if (noVid) {
+                noVid.remove();
+                const video2 = document.createElement('video');
+                video2.autoplay = true;
+                video2.playsInline = true;
+                video2.srcObject = e.streams[0];
+                existing.insertBefore(video2, existing.firstChild);
+            }
+        }
+    };
+
+    pc.onicecandidate = (e) => {
+        if (e.candidate) {
+            socket.emit('ice-candidate', { to: targetSocketId, candidate: e.candidate });
+        }
+    };
+
+    pc.onconnectionstatechange = () => {
+        console.log(`Peer ${targetSocketId} state:`, pc.connectionState);
+    };
+
+    if (isInitiator) {
+        pc.createOffer()
+            .then(offer => pc.setLocalDescription(offer))
+            .then(() => socket.emit('offer', { to: targetSocketId, offer: pc.localDescription }));
+    }
+
+    return pc;
+}
+
+// Socket events
+socket.on('connect', async () => {
+    console.log('✅ Socket connected:', socket.id);
+    
+    // Get camera and mic
+    try {
+        localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        addVideoBox(socket.id, user.full_name, user.role, localStream, true);
+    } catch(e) {
+        console.warn('Camera/mic not available:', e);
+        addVideoBox(socket.id, user.full_name, user.role, null, true);
+    }
+
+    // Record join time for attendance (students only)
+    if(user.role === 'student') {
+        try {
+            await fetch(`${API}/attendance/join`, {
+                method: 'POST',
+                headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ session_id: sessionId })
+            });
+            console.log('📋 Join time recorded for attendance');
+        } catch(e) { console.warn('Join record failed:', e); }
+    }
+
+    socket.emit('join-room', {
+        roomId,
+        userId: user.id,
+        userName: user.full_name,
+        role: user.role
+    });
+});
+socket.on('room-participants', (participants) => {
+    participants.forEach(p => {
+        addVideoBox(p.socketId, p.userName, p.role, null, false);
+        createPeer(p.socketId, true);
+    });
+});
+
+socket.on('user-joined', ({ socketId, userName, role }) => {
+    console.log('👤 User joined:', userName);
+    addVideoBox(socketId, userName, role, null, false);
+    createPeer(socketId, false);
+});
+
+socket.on('offer', async ({ from, offer, userName }) => {
+    let pc = peers[from];
+    if (!pc) pc = createPeer(from, false);
+    await pc.setRemoteDescription(new RTCSessionDescription(offer));
+    const answer = await pc.createAnswer();
+    await pc.setLocalDescription(answer);
+    socket.emit('answer', { to: from, answer: pc.localDescription });
+});
+
+socket.on('answer', async ({ from, answer }) => {
+    const pc = peers[from];
+    if (pc) await pc.setRemoteDescription(new RTCSessionDescription(answer));
+});
+
+socket.on('ice-candidate', ({ from, candidate }) => {
+    const pc = peers[from];
+    if (pc) pc.addIceCandidate(new RTCIceCandidate(candidate)).catch(e => console.warn(e));
+});
+
+socket.on('user-left', ({ socketId, userName }) => {
+    removeVideoBox(socketId);
+    addChatMessage('System', `${userName} left the class`, '', true);
+});
+
+socket.on('chat-message', ({ userName, role, message, time }) => {
+    const isMe = userName === user.full_name;
+    addChatMessage(userName, message, time, false, isMe);
+});
+
+socket.on('hand-raised', ({ socketId, userName, raised }) => {
+    const hand = document.getElementById('hand_' + socketId);
+    if (hand) hand.classList.toggle('show', raised);
+    if (raised) addChatMessage('System', `✋ ${userName} raised their hand`, '', true);
+});
+
+// Chat
+function addChatMessage(name, text, time, isSystem, isMe) {
+    const div = document.createElement('div');
+    div.className = 'chat-msg' + (isMe ? ' mine' : '');
+    if (isSystem) {
+        div.innerHTML = `<div style="font-size:0.75rem;color:#888;text-align:center">${text}</div>`;
+    } else {
+        div.innerHTML = `<div class="cm-name">${name}</div><div class="cm-text">${text}</div>${time ? `<div class="cm-time">${time}</div>` : ''}`;
+    }
+    const container = document.getElementById('chat-messages');
+    container.appendChild(div);
+    container.scrollTop = container.scrollHeight;
+}
+
+function sendChat() {
+    const input = document.getElementById('chat-input');
+    const msg = input.value.trim();
+    if (!msg) return;
+    socket.emit('chat-message', { roomId, message: msg });
+    input.value = '';
+}
+
+// Controls
+function toggleMic() {
+    micOn = !micOn;
+    if (localStream) localStream.getAudioTracks().forEach(t => t.enabled = micOn);
+    const btn = document.getElementById('btn-mic');
+    btn.className = `ctrl-btn ${micOn ? 'on' : 'off'}`;
+    btn.innerHTML = `<i class="fas fa-microphone${micOn ? '' : '-slash'}"></i>`;
+}
+
+function toggleCam() {
+    camOn = !camOn;
+    if (localStream) localStream.getVideoTracks().forEach(t => t.enabled = camOn);
+    const btn = document.getElementById('btn-cam');
+    btn.className = `ctrl-btn ${camOn ? 'on' : 'off'}`;
+    btn.innerHTML = `<i class="fas fa-video${camOn ? '' : '-slash'}"></i>`;
+}
+
+function toggleHand() {
+    handRaised = !handRaised;
+    socket.emit('raise-hand', { roomId });
+    const btn = document.getElementById('btn-hand');
+    btn.classList.toggle('raised', handRaised);
+    btn.title = handRaised ? 'Lower Hand' : 'Raise Hand';
+}
+
+function updateParticipants() {
+    const boxes = document.querySelectorAll('.video-box');
+    const list = document.getElementById('participants-list');
+    list.innerHTML = '';
+    boxes.forEach(box => {
+        const label = box.querySelector('.video-label');
+        if (!label) return;
+        const text = label.textContent;
+        const roleTag = label.querySelector('.role-tag');
+        const role = roleTag ? roleTag.textContent : '';
+        const name = text.replace(role, '').replace('(You)', '').trim();
+        const div = document.createElement('div');
+        div.className = 'participant';
+        div.innerHTML = `<div class="p-avatar">${name[0]?.toUpperCase()}</div><div><div class="p-name">${name}</div><div class="p-role">${role}</div></div>`;
+        list.appendChild(div);
+    });
+}
+
+function switchSbTab(tab) {
+    document.querySelectorAll('.sb-tab').forEach((b, i) => b.classList.toggle('active', (i === 0 && tab === 'participants') || (i === 1 && tab === 'chat')));
+    document.getElementById('sb-participants').classList.toggle('active', tab === 'participants');
+    document.getElementById('sb-chat').classList.toggle('active', tab === 'chat');
+}
+
+function leaveClass() {
+    if (confirm('Leave this class?')) {
+        if (localStream) localStream.getTracks().forEach(t => t.stop());
+        clearInterval(timerInterval);
+        socket.disconnect();
+        window.location.href = user.role === 'teacher' ? '/teacher-dashboard.html' : '/student-dashboard.html';
+    }
+}
+
+// Start everything
+loadSession();
+startTimer();
+</script>
+</body>
+</html>

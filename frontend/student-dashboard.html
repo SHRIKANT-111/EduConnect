@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Student Dashboard — EduConnect</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Poppins',sans-serif;background:linear-gradient(135deg,#11998e 0%,#38ef7d 100%);min-height:100vh;}
+header{background:rgba(255,255,255,0.97);padding:14px 25px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 4px 20px rgba(0,0,0,0.12);position:sticky;top:0;z-index:100;}
+.h-logo{display:flex;align-items:center;gap:10px;font-size:1.25rem;font-weight:800;color:#11998e;}
+.h-logo i{animation:spin 4s ease-in-out infinite;}
+@keyframes spin{0%,100%{transform:rotate(0);}50%{transform:rotate(15deg);}}
+.h-right{display:flex;align-items:center;gap:14px;}
+.h-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#11998e,#38ef7d);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;}
+.h-name{font-size:0.88rem;font-weight:600;color:#333;}
+.h-uid{font-size:0.72rem;color:#11998e;font-weight:600;}
+.h-notif{position:relative;cursor:pointer;width:38px;height:38px;border-radius:50%;background:#f5f5f5;display:flex;align-items:center;justify-content:center;}
+.h-notif i{color:#11998e;}
+.notif-badge{position:absolute;top:-2px;right:-2px;width:16px;height:16px;background:#ff4757;border-radius:50%;font-size:0.6rem;color:#fff;display:flex;align-items:center;justify-content:center;}
+.btn-logout{padding:9px 20px;background:linear-gradient(135deg,#ff6b6b,#ee5a6f);color:#fff;border:none;border-radius:20px;font-size:0.82rem;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;transition:all 0.3s;}
+.btn-logout:hover{transform:translateY(-2px);}
+.layout{display:flex;min-height:calc(100vh - 68px);}
+.sidebar{width:265px;background:rgba(255,255,255,0.97);padding:25px 0;box-shadow:2px 0 15px rgba(0,0,0,0.08);flex-shrink:0;}
+.sb-section{padding:0 20px;margin-bottom:8px;font-size:0.7rem;font-weight:700;color:#bbb;letter-spacing:2px;text-transform:uppercase;margin-top:16px;}
+.sb-btn{display:flex;align-items:center;gap:12px;padding:13px 22px;color:#666;cursor:pointer;transition:all 0.25s;font-size:0.88rem;font-weight:500;border-left:3px solid transparent;border:none;background:transparent;width:100%;font-family:'Poppins',sans-serif;}
+.sb-btn i{width:20px;text-align:center;}
+.sb-btn:hover{background:#f0fff8;color:#11998e;transform:translateX(5px);}
+.sb-btn.active{background:linear-gradient(90deg,rgba(17,153,142,0.12),rgba(17,153,142,0.04));color:#11998e;border-left:3px solid #11998e;font-weight:600;}
+.content{flex:1;padding:28px;overflow-y:auto;}
+.panel{display:none;animation:fadeIn 0.4s ease;}
+.panel.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(15px);}to{opacity:1;transform:translateY(0);}}
+.page-title{font-size:1.5rem;font-weight:800;color:#fff;margin-bottom:22px;display:flex;align-items:center;gap:12px;}
+.page-title i{background:rgba(255,255,255,0.25);padding:10px;border-radius:12px;}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:16px;margin-bottom:24px;}
+.stat-card{background:rgba(255,255,255,0.97);border-radius:18px;padding:22px;display:flex;align-items:center;gap:16px;box-shadow:0 5px 20px rgba(0,0,0,0.1);cursor:pointer;transition:all 0.3s;}
+.stat-card:hover{transform:translateY(-5px);box-shadow:0 12px 35px rgba(0,0,0,0.18);}
+.sc-icon{width:55px;height:55px;border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:#fff;flex-shrink:0;}
+.sci-a{background:linear-gradient(135deg,#11998e,#38ef7d);}
+.sci-b{background:linear-gradient(135deg,#667eea,#764ba2);}
+.sci-c{background:linear-gradient(135deg,#f7971e,#ffd200);}
+.sci-d{background:linear-gradient(135deg,#ff6b6b,#ee5a6f);}
+.sc-num{font-size:1.8rem;font-weight:800;color:#333;}
+.sc-label{font-size:0.75rem;color:#999;margin-top:1px;}
+.wcard{background:rgba(255,255,255,0.97);border-radius:18px;padding:28px;box-shadow:0 5px 20px rgba(0,0,0,0.1);margin-bottom:22px;}
+.wcard-title{font-size:1.1rem;font-weight:700;color:#333;display:flex;align-items:center;gap:10px;margin-bottom:18px;}
+.wcard-title i{color:#11998e;}
+.btn{padding:11px 22px;border:none;border-radius:10px;font-size:0.85rem;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;transition:all 0.3s;display:inline-flex;align-items:center;gap:7px;text-decoration:none;}
+.btn-primary{background:linear-gradient(135deg,#11998e,#38ef7d);color:#fff;box-shadow:0 4px 15px rgba(17,153,142,0.3);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(17,153,142,0.5);}
+.btn-purple{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;}
+.btn-purple:hover{transform:translateY(-2px);}
+.btn-sm{padding:7px 14px;font-size:0.78rem;}
+.tbl-wrap{overflow:hidden;border-radius:12px;border:1.5px solid #f0f0f0;}
+table{width:100%;border-collapse:collapse;}
+th{background:#f8fff8;padding:12px 16px;text-align:left;font-size:0.78rem;color:#999;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;border-bottom:1.5px solid #f0f0f0;}
+td{padding:14px 16px;font-size:0.86rem;color:#555;border-bottom:1px solid #fafafa;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#f8fffb;}
+.bdg{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:50px;font-size:0.75rem;font-weight:600;}
+.bdg-green{background:#e8fff5;color:#00a854;}
+.bdg-red{background:#fff0f0;color:#cc0000;}
+.bdg-blue{background:#f0f5ff;color:#1a73e8;}
+.bdg-yellow{background:#fffbe6;color:#b8860b;}
+.bdg-live{background:#fff0f0;color:#cc0000;animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.6;}}
+.fg{margin-bottom:16px;}
+.fg label{display:block;font-size:0.82rem;font-weight:600;color:#555;margin-bottom:6px;}
+.fg select{width:100%;padding:12px 15px;border:2px solid #e8e8e8;border-radius:10px;font-size:0.88rem;font-family:'Poppins',sans-serif;transition:all 0.3s;color:#333;outline:none;}
+.fg select:focus{border-color:#11998e;}
+.note-card{background:#f8fffb;border-radius:14px;padding:20px;margin-bottom:14px;border-left:4px solid #11998e;transition:all 0.3s;}
+.note-card:hover{transform:translateX(6px);box-shadow:0 6px 20px rgba(0,0,0,0.08);}
+.note-card h4{font-size:0.95rem;font-weight:700;color:#333;margin-bottom:6px;display:flex;align-items:center;gap:8px;}
+.note-card p{font-size:0.82rem;color:#888;margin:4px 0;display:flex;align-items:center;gap:6px;}
+.note-card p i{color:#bbb;width:15px;}
+.note-text-content{background:#fff;border:1.5px solid #e8f5e9;border-radius:10px;padding:15px;margin:12px 0;font-size:0.85rem;color:#444;line-height:1.7;white-space:pre-wrap;max-height:200px;overflow-y:auto;}
+.note-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:200;align-items:center;justify-content:center;padding:15px;}
+.modal-bg.open{display:flex;}
+.modal{background:#fff;border-radius:22px;padding:30px;width:100%;max-width:480px;animation:modalIn 0.35s ease;}
+@keyframes modalIn{from{opacity:0;transform:scale(0.92);}to{opacity:1;transform:scale(1);}}
+.modal-title{font-size:1.2rem;font-weight:800;color:#333;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;}
+.modal-close{background:none;border:none;color:#bbb;cursor:pointer;font-size:1.1rem;}
+.modal-close:hover{color:#ff6b6b;}
+.fg2{margin-bottom:16px;}
+.fg2 label{display:block;font-size:0.82rem;font-weight:600;color:#555;margin-bottom:6px;}
+.fg2 input{width:100%;padding:12px 15px;border:2px solid #e8e8e8;border-radius:10px;font-size:0.88rem;font-family:'Poppins',sans-serif;transition:all 0.3s;color:#333;outline:none;}
+.fg2 input:focus{border-color:#11998e;}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px;}
+.alert{padding:11px 15px;border-radius:10px;font-size:0.83rem;font-weight:500;margin-bottom:14px;display:none;align-items:center;gap:8px;}
+.alert.show{display:flex;}
+.alert.success{background:#e8fff5;border:1.5px solid #b7f0ca;color:#007a33;}
+.alert.error{background:#fff0f0;border:1.5px solid #ffcccc;color:#cc0000;}
+.empty{text-align:center;padding:50px 20px;color:#ccc;}
+.empty i{font-size:3.5rem;margin-bottom:16px;display:block;animation:float 3s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-12px);}}
+.att-bar-wrap{height:8px;background:#eee;border-radius:50px;overflow:hidden;margin-top:5px;}
+.att-bar{height:100%;border-radius:50px;background:linear-gradient(90deg,#11998e,#38ef7d);}
+.qa-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:22px;}
+.qa-card{background:rgba(255,255,255,0.97);border-radius:16px;padding:22px;text-align:center;cursor:pointer;transition:all 0.3s;box-shadow:0 4px 15px rgba(0,0,0,0.08);}
+.qa-card:hover{transform:translateY(-6px);background:linear-gradient(135deg,#11998e,#38ef7d);}
+.qa-card:hover i,.qa-card:hover p{color:#fff!important;}
+.qa-card i{font-size:1.8rem;color:#11998e;margin-bottom:8px;display:block;transition:all 0.3s;}
+.qa-card p{font-size:0.82rem;font-weight:700;color:#555;transition:all 0.3s;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="h-logo"><i class="fas fa-graduation-cap"></i> EduConnect</div>
+  <div class="h-right">
+    <div class="h-notif" onclick="loadNotifications()"><i class="fas fa-bell"></i><span class="notif-badge" id="nCount">0</span></div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div class="h-avatar" id="hAvatar">S</div>
+      <div><div class="h-name" id="hName">Student</div><div class="h-uid" id="hUid">STU-0000</div></div>
+    </div>
+    <button class="btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sb-section">Main</div>
+    <button class="sb-btn active" onclick="showPanel('home')"><i class="fas fa-home"></i> Dashboard</button>
+    <button class="sb-btn" onclick="showPanel('classes')"><i class="fas fa-book"></i> My Classes</button>
+    <div class="sb-section">Learning</div>
+    <button class="sb-btn" onclick="showPanel('notes')"><i class="fas fa-file-alt"></i> Notes</button>
+    <button class="sb-btn" onclick="showPanel('assignments')"><i class="fas fa-tasks"></i> Assignments</button>
+    <div class="sb-section">Progress</div>
+    <button class="sb-btn" onclick="showPanel('attendance')"><i class="fas fa-calendar-check"></i> My Attendance</button>
+  </aside>
+
+  <div class="content">
+
+    <!-- HOME -->
+    <div class="panel active" id="panel-home">
+      <div class="page-title"><i class="fas fa-home"></i> Welcome Back! 👋</div>
+      <div class="stats-row">
+        <div class="stat-card" onclick="showPanel('classes')"><div class="sc-icon sci-a"><i class="fas fa-book"></i></div><div><div class="sc-num" id="s-cls">0</div><div class="sc-label">My Classes</div></div></div>
+        <div class="stat-card" onclick="showPanel('assignments')"><div class="sc-icon sci-b"><i class="fas fa-tasks"></i></div><div><div class="sc-num" id="s-pend">0</div><div class="sc-label">Pending</div></div></div>
+        <div class="stat-card" onclick="showPanel('attendance')"><div class="sc-icon sci-c"><i class="fas fa-chart-pie"></i></div><div><div class="sc-num" id="s-att">—</div><div class="sc-label">Attendance</div></div></div>
+        <div class="stat-card" onclick="showPanel('notes')"><div class="sc-icon sci-d"><i class="fas fa-file-alt"></i></div><div><div class="sc-num" id="s-notes">0</div><div class="sc-label">Notes</div></div></div>
+      </div>
+      <div class="page-title" style="font-size:1.1rem;"><i class="fas fa-bolt"></i> Quick Actions</div>
+      <div class="qa-grid">
+        <div class="qa-card" onclick="showPanel('classes')"><i class="fas fa-book"></i><p>My Classes</p></div>
+        <div class="qa-card" onclick="showPanel('notes')"><i class="fas fa-file-alt"></i><p>View Notes</p></div>
+        <div class="qa-card" onclick="showPanel('assignments')"><i class="fas fa-tasks"></i><p>Assignments</p></div>
+        <div class="qa-card" onclick="showPanel('attendance')"><i class="fas fa-calendar-check"></i><p>Attendance</p></div>
+      </div>
+      <div class="page-title" style="font-size:1.1rem;"><i class="fas fa-video"></i> Live Classes Now</div>
+      <div class="wcard" id="live-wrap">
+        <div class="empty"><i class="fas fa-video"></i><p>No live classes right now</p></div>
+      </div>
+    </div>
+
+    <!-- CLASSES -->
+    <div class="panel" id="panel-classes">
+      <div class="page-title"><i class="fas fa-book"></i> My Classes</div>
+      <div id="classes-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:18px;">
+        <div class="empty"><i class="fas fa-book-open"></i><p>Loading classes...</p></div>
+      </div>
+    </div>
+
+    <!-- NOTES -->
+    <div class="panel" id="panel-notes">
+      <div class="page-title"><i class="fas fa-file-alt"></i> Notes</div>
+      <div class="wcard" style="margin-bottom:20px;">
+        <div class="fg" style="margin-bottom:0;"><label>Select Classroom</label><select id="notes-cls-filter" onchange="loadNotes()"></select></div>
+      </div>
+      <div id="notes-list"><div class="empty"><i class="fas fa-file"></i><p>Select a classroom to view notes</p></div></div>
+    </div>
+
+    <!-- ASSIGNMENTS -->
+    <div class="panel" id="panel-assignments">
+      <div class="page-title"><i class="fas fa-tasks"></i> Assignments</div>
+      <div class="wcard" style="margin-bottom:20px;">
+        <div class="fg" style="margin-bottom:0;"><label>Select Classroom</label><select id="asn-cls-filter" onchange="loadAssignments()"></select></div>
+      </div>
+      <div id="asn-list"><div class="empty"><i class="fas fa-tasks"></i><p>Select a classroom to view assignments</p></div></div>
+    </div>
+
+    <!-- ATTENDANCE -->
+    <div class="panel" id="panel-attendance">
+      <div class="page-title"><i class="fas fa-calendar-check"></i> My Attendance</div>
+      <div class="wcard" style="margin-bottom:20px;">
+        <div class="fg" style="margin-bottom:0;"><label>Select Classroom</label><select id="att-cls-filter" onchange="loadAttendance()"></select></div>
+      </div>
+      <div id="att-summary"></div>
+      <div id="att-list"><div class="empty"><i class="fas fa-calendar"></i><p>Select a classroom to view attendance</p></div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- SUBMIT MODAL -->
+<div class="modal-bg" id="modal-submit">
+  <div class="modal">
+    <div class="modal-title">Submit Assignment <button class="modal-close" onclick="closeModal('modal-submit')"><i class="fas fa-times"></i></button></div>
+    <div class="alert error" id="sub-err"></div>
+    <div class="alert success" id="sub-ok"></div>
+    <p id="sub-asn-title" style="font-size:0.88rem;color:#888;margin-bottom:16px;"></p>
+    <div class="fg2"><label>Upload Your Answer (PDF only)</label><input type="file" id="sub-file" accept=".pdf"/></div>
+    <input type="hidden" id="sub-asn-id"/>
+    <div class="modal-actions">
+      <button class="btn" style="background:#f5f5f5;color:#999;" onclick="closeModal('modal-submit')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitAssignment()"><i class="fas fa-paper-plane"></i> Submit</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API='http://localhost:5000/api';
+const token=localStorage.getItem('token');
+const user=JSON.parse(localStorage.getItem('user')||'null');
+let myClasses=[];
+
+if(!token||!user||user.role!=='student'){
+    localStorage.clear();
+    window.location.href='/login.html';
+}
+document.getElementById('hName').textContent=user.full_name;
+document.getElementById('hUid').textContent=user.unique_id;
+document.getElementById('hAvatar').textContent=user.full_name[0].toUpperCase();
+
+const H=()=>({Authorization:`Bearer ${token}`,'Content-Type':'application/json'});
+const HF=()=>({Authorization:`Bearer ${token}`});
+
+function showPanel(name){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById(`panel-${name}`).classList.add('active');
+  document.querySelectorAll('.sb-btn').forEach(b=>b.classList.remove('active'));
+  const map={home:0,classes:1,notes:2,assignments:3,attendance:4};
+  document.querySelectorAll('.sb-btn')[map[name]]?.classList.add('active');
+  if(name==='home') loadHome();
+  if(name==='classes') loadClasses();
+  if(name==='notes'){loadMyClasses();populateFilters();}
+  if(name==='assignments'){loadMyClasses();populateFilters();}
+  if(name==='attendance'){loadMyClasses();populateFilters();}
+}
+
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+
+function showAlert(id,msg,type='error'){
+  const el=document.getElementById(id);if(!el)return;
+  el.innerHTML=`<i class="fas fa-${type==='error'?'exclamation-circle':'check-circle'}"></i> ${msg}`;
+  el.className=`alert ${type} show`;
+  setTimeout(()=>el.classList.remove('show'),4000);
+}
+
+async function loadMyClasses(){
+  if(myClasses.length>0)return;
+  const res=await fetch(`${API}/classes/student`,{headers:H()});
+  const data=await res.json();
+  if(data.success) myClasses=data.classrooms;
+}
+
+function populateFilters(){
+  const opts=myClasses.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+  ['notes-cls-filter','asn-cls-filter','att-cls-filter'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.innerHTML=`<option value="">Select classroom...</option>${opts}`;
+  });
+}
+
+async function loadHome(){
+  await loadMyClasses();
+  document.getElementById('s-cls').textContent=myClasses.length;
+
+  // Live sessions
+  let live=[];
+  let totalNotes=0;
+  for(const c of myClasses){
+    const r=await fetch(`${API}/classes/${c.id}/sessions`,{headers:H()});
+    const d=await r.json();
+    if(d.success) live=live.concat(d.classes.filter(s=>s.status==='live').map(s=>({...s,classroom_name:c.name})));
+    const nr=await fetch(`${API}/notes/${c.id}`,{headers:H()});
+    const nd=await nr.json();
+    if(nd.success) totalNotes+=nd.notes.length;
+  }
+  document.getElementById('s-notes').textContent=totalNotes;
+
+  const liveWrap=document.getElementById('live-wrap');
+  if(live.length===0){liveWrap.innerHTML='<div class="empty"><i class="fas fa-video"></i><p>No live classes right now. Check back soon!</p></div>';return;}
+  liveWrap.innerHTML=live.map(s=>`
+    <div style="background:#fff0f5;border-left:4px solid #ff4757;border-radius:12px;padding:18px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+      <div>
+        <div style="font-weight:700;color:#333;font-size:0.95rem;margin-bottom:4px"><span style="display:inline-block;width:10px;height:10px;background:#ff4757;border-radius:50%;margin-right:8px;animation:pulse 1.5s infinite;"></span>${s.title}</div>
+        <div style="font-size:0.82rem;color:#888">${s.classroom_name} • Started at ${s.start_time}</div>
+      </div>
+      <a href="/classroom.html?session=${s.id}" target="_blank" class="btn btn-primary btn-sm" style="text-decoration:none"><i class="fas fa-sign-in-alt"></i> Join Now</a>
+    </div>`).join('');
+}
+
+async function loadClasses(){
+  await loadMyClasses();
+  const grid=document.getElementById('classes-grid');
+  if(myClasses.length===0){grid.innerHTML='<div class="empty" style="grid-column:1/-1"><i class="fas fa-book-open"></i><p>Not enrolled in any class yet</p></div>';return;}
+  grid.innerHTML=myClasses.map(c=>`
+    <div class="wcard" style="margin-bottom:0;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+        <span style="background:linear-gradient(135deg,#11998e,#38ef7d);color:#fff;padding:4px 12px;border-radius:50px;font-size:0.72rem;font-weight:700">${c.classroom_code}</span>
+      </div>
+      <div style="font-size:1rem;font-weight:700;color:#333;margin-bottom:4px">${c.name}</div>
+      <div style="font-size:0.82rem;color:#999;margin-bottom:10px">${c.subject}</div>
+      <div style="font-size:0.82rem;color:#666"><i class="fas fa-user-tie" style="color:#11998e;margin-right:6px"></i>Teacher: ${c.teacher_name} <span style="color:#11998e;font-weight:600">(${c.teacher_uid})</span></div>
+    </div>`).join('');
+}
+
+async function loadNotes(){
+  const classId=document.getElementById('notes-cls-filter').value;
+  if(!classId)return;
+  const res=await fetch(`${API}/notes/${classId}`,{headers:H()});
+  const data=await res.json();
+  const container=document.getElementById('notes-list');
+  if(!data.success||data.notes.length===0){container.innerHTML='<div class="empty"><i class="fas fa-file"></i><p>No notes available yet</p></div>';return;}
+  container.innerHTML=data.notes.map(n=>{
+    const isTxt=n.file_name.endsWith('.txt')||n.file_path.endsWith('.txt');
+    return `<div class="note-card">
+      <h4><i class="fas fa-${isTxt?'align-left':'file-pdf'}" style="color:${isTxt?'#11998e':'#ff4757'}"></i>${n.title}
+        <span style="font-size:0.72rem;background:${isTxt?'#e8fff5':'#fff0f0'};color:${isTxt?'#11998e':'#ff4757'};padding:2px 8px;border-radius:50px;font-weight:600">${isTxt?'TEXT':'PDF'}</span>
+      </h4>
+      ${n.description?`<p><i class="fas fa-info-circle"></i>${n.description}</p>`:''}
+      <p><i class="fas fa-user"></i>By: ${n.uploaded_by} &nbsp;|&nbsp; <i class="fas fa-clock"></i>${new Date(n.created_at).toLocaleString()}</p>
+      ${isTxt?`<div class="note-text-content" id="txt-${n.id}" style="display:none">Loading...</div>`:''}
+      <div class="note-actions">
+        ${isTxt?`<button class="btn btn-primary btn-sm" onclick="viewTextNote(${n.id},'${API}/uploads/notes/${n.file_path}')"><i class="fas fa-eye"></i> Read Notes</button>`:''}
+        <a href="${API}/notes/download/${n.id}" class="btn ${isTxt?'btn-purple':'btn-primary'} btn-sm" style="text-decoration:none"><i class="fas fa-download"></i> Download</a>
+        ${!isTxt?`<a href="http://localhost:5000/uploads/notes/${n.file_path}" target="_blank" class="btn btn-sm" style="background:#f5f5f5;color:#666;text-decoration:none"><i class="fas fa-eye"></i> View PDF</a>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function viewTextNote(noteId,url){
+  const div=document.getElementById(`txt-${noteId}`);
+  if(div.style.display==='block'){div.style.display='none';return;}
+  div.style.display='block';
+  try{
+    const res=await fetch(url);
+    const text=await res.text();
+    div.textContent=text;
+  } catch(e){div.textContent='Could not load note content.';}
+}
+
+async function loadAssignments(){
+  const classId=document.getElementById('asn-cls-filter').value;
+  if(!classId)return;
+  const res=await fetch(`${API}/assignments/${classId}`,{headers:H()});
+  const data=await res.json();
+  const container=document.getElementById('asn-list');
+  if(!data.success||data.assignments.length===0){container.innerHTML='<div class="empty"><i class="fas fa-tasks"></i><p>No assignments yet</p></div>';return;}
+  container.innerHTML=`<div class="tbl-wrap"><table><thead><tr><th>Title</th><th>Due Date</th><th>Marks</th><th>Status</th><th>Action</th></tr></thead><tbody>
+  ${data.assignments.map(a=>{
+    const overdue=new Date()>new Date(a.due_date)&&a.status==='active';
+    return `<tr>
+      <td><div style="font-weight:600">${a.title}</div><div style="font-size:0.78rem;color:#aaa">${a.description?.substring(0,50)}...</div></td>
+      <td style="${overdue?'color:#cc0000;font-weight:600':''}">${new Date(a.due_date).toLocaleString()}</td>
+      <td>${a.total_marks}</td>
+      <td><span class="bdg bdg-${a.status==='active'?'green':'red'}">${a.status}</span></td>
+      <td>${!overdue&&a.status==='active'?`<button class="btn btn-primary btn-sm" onclick="openSubmitModal(${a.id},'${a.title.replace(/'/g,"\\'")}')"><i class="fas fa-upload"></i> Submit</button>`:`<span style="color:#ccc;font-size:0.8rem">Closed</span>`}</td>
+    </tr>`;
+  }).join('')}
+  </tbody></table></div>`;
+}
+
+function openSubmitModal(id,title){
+  document.getElementById('sub-asn-id').value=id;
+  document.getElementById('sub-asn-title').textContent=`📝 ${title}`;
+  openModal('modal-submit');
+}
+
+async function submitAssignment(){
+  const aid=document.getElementById('sub-asn-id').value;
+  const file=document.getElementById('sub-file').files[0];
+  if(!file)return showAlert('sub-err','Please select a PDF file.');
+  const form=new FormData();
+  form.append('assignment_id',aid);form.append('pdf',file);
+  const res=await fetch(`${API}/assignments/submit`,{method:'POST',headers:HF(),body:form});
+  const data=await res.json();
+  if(data.success){showAlert('sub-ok','Assignment submitted successfully!','success');setTimeout(()=>closeModal('modal-submit'),2000);}
+  else showAlert('sub-err',data.message);
+}
+
+async function loadAttendance(){
+  const classId=document.getElementById('att-cls-filter').value;
+  if(!classId)return;
+  const res=await fetch(`${API}/attendance/student/${classId}`,{headers:H()});
+  const data=await res.json();
+  if(!data.success)return;
+  const {total,present,absent,percentage}=data.summary;
+  const color=percentage>=75?'#11998e':percentage>=50?'#f7971e':'#ff4757';
+  document.getElementById('att-summary').innerHTML=`
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:20px;">
+      <div class="stat-card"><div class="sc-icon sci-a"><i class="fas fa-calendar"></i></div><div><div class="sc-num">${total}</div><div class="sc-label">Total Classes</div></div></div>
+      <div class="stat-card"><div class="sc-icon sci-a"><i class="fas fa-check"></i></div><div><div class="sc-num" style="color:#11998e">${present}</div><div class="sc-label">Present</div></div></div>
+      <div class="stat-card"><div class="sc-icon sci-d"><i class="fas fa-times"></i></div><div><div class="sc-num" style="color:#ff4757">${absent}</div><div class="sc-label">Absent</div></div></div>
+      <div class="stat-card"><div class="sc-icon" style="background:linear-gradient(135deg,${color},${color}aa)"><i class="fas fa-percent"></i></div>
+        <div><div class="sc-num" style="color:${color}">${percentage}%</div><div class="sc-label">Rate</div>
+        <div class="att-bar-wrap"><div class="att-bar" style="width:${percentage}%;background:${color}"></div></div></div>
+      </div>
+    </div>`;
+  const list=document.getElementById('att-list');
+  if(data.records.length===0){list.innerHTML='<div class="empty"><i class="fas fa-calendar"></i><p>No sessions yet</p></div>';return;}
+  list.innerHTML=`<div class="tbl-wrap"><table><thead><tr><th>Session</th><th>Date</th><th>Status</th><th>Duration</th></tr></thead><tbody>
+  ${data.records.map(r=>`<tr>
+    <td style="font-weight:600">${r.title}</td>
+    <td>${r.scheduled_date}</td>
+    <td><span class="bdg bdg-${r.status==='present'?'green':'red'}">${r.status}</span></td>
+    <td>${r.duration_minutes?r.duration_minutes+' min':'—'}</td>
+  </tr>`).join('')}
+  </tbody></table></div>`;
+}
+
+async function loadNotifications(){
+  const res=await fetch(`${API}/notifications`,{headers:H()});
+  const data=await res.json();
+  if(data.success){
+    document.getElementById('nCount').textContent=data.notifications.filter(n=>!n.is_read).length;
+    await fetch(`${API}/notifications/read`,{method:'PUT',headers:H()});
+  }
+}
+
+function logout(){localStorage.clear();window.location.href='/login.html';}
+loadHome();loadNotifications();
+</script>
+</body>
+</html>

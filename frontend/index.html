@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>EduConnect</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Poppins',sans-serif;background:linear-gradient(135deg,#667eea,#764ba2);height:100vh;display:flex;align-items:center;justify-content:center;}
+.board{width:85%;max-width:800px;height:460px;background:linear-gradient(160deg,#1c2e1c,#2d4a2d);border:18px solid #6b3a1f;border-radius:12px;box-shadow:0 30px 90px rgba(0,0,0,0.6);position:relative;overflow:hidden;animation:drop 1.2s ease;}
+@keyframes drop{from{transform:translateY(-120%);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.frame{position:absolute;inset:14px;border:2px solid rgba(255,255,255,0.08);border-radius:4px;}
+.writing{position:absolute;top:50%;left:50%;transform:translate(-50%,-60%);text-align:center;width:90%;}
+.t1{font-size:1.3rem;color:rgba(255,255,255,0.8);font-weight:300;letter-spacing:4px;opacity:0;animation:appear 0.8s ease 1.4s forwards;}
+.t2{font-size:3rem;color:#fff;font-weight:800;opacity:0;animation:appear 0.8s ease 2s forwards;text-shadow:0 0 40px rgba(255,255,255,0.4);}
+.t3{font-size:0.95rem;color:rgba(255,255,255,0.65);margin-top:8px;opacity:0;animation:appear 0.6s ease 2.6s forwards;}
+@keyframes appear{from{opacity:0;transform:translateX(-15px);}to{opacity:1;transform:translateX(0);}}
+.icons{display:flex;gap:28px;justify-content:center;margin-top:20px;opacity:0;animation:appear 0.6s ease 3s forwards;}
+.icons span{font-size:0.8rem;color:rgba(255,255,255,0.6);}
+.startbtn{position:absolute;bottom:38px;left:50%;transform:translateX(-50%);padding:15px 55px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:50px;font-size:1rem;font-weight:700;cursor:pointer;opacity:0;animation:appear 0.5s ease 3.4s forwards;font-family:'Poppins',sans-serif;box-shadow:0 10px 35px rgba(0,0,0,0.4);transition:all 0.3s;}
+.startbtn:hover{transform:translateX(-50%) translateY(-5px);box-shadow:0 18px 45px rgba(102,126,234,0.7);}
+.chalk{position:absolute;bottom:-80px;left:30px;width:12px;height:70px;background:#fff;border-radius:4px;transform:rotate(-35deg);animation:chalkin 0.7s ease 1s forwards;}
+@keyframes chalkin{to{bottom:25px;}}
+.eraser{position:absolute;top:20px;right:-80px;width:65px;height:32px;background:linear-gradient(135deg,#ff6b6b,#ff9a9a);border-radius:4px;animation:eraserin 0.7s ease 1s forwards;}
+@keyframes eraserin{to{right:25px;}}
+</style>
+</head>
+<body>
+<div class="board">
+  <div class="frame"></div>
+  <div class="chalk"></div>
+  <div class="eraser"></div>
+  <div class="writing">
+    <div class="t1">Welcome to</div>
+    <div class="t2">🎓 EduConnect</div>
+    <div class="t3">Your Complete Virtual Classroom Platform</div>
+    <div class="icons">
+      <span><i class="fas fa-video"></i> Live Classes</span>
+      <span><i class="fas fa-file-pdf"></i> PDF Notes</span>
+      <span><i class="fas fa-tasks"></i> Assignments</span>
+    </div>
+  </div>
+  <button class="startbtn" onclick="start()">
+    <i class="fas fa-arrow-right"></i> &nbsp;Let's Start!
+  </button>
+</div>
+<script>
+function start(){
+  window.location.href='/login.html';
+}
+</script>
+</body>
+</html>

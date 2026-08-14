@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Login - EduConnect</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Poppins',sans-serif;background:linear-gradient(135deg,#667eea,#764ba2);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;}
+.logo{color:#fff;font-size:1.5rem;font-weight:800;margin-bottom:25px;display:flex;align-items:center;gap:10px;}
+.box{background:#fff;border-radius:24px;padding:35px;width:100%;max-width:460px;box-shadow:0 25px 70px rgba(0,0,0,0.3);}
+.box h2{font-size:1.6rem;font-weight:800;color:#333;margin-bottom:5px;}
+.box p{color:#aaa;font-size:0.88rem;margin-bottom:25px;}
+.role-cards{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.rc{padding:25px 15px;border:2.5px solid #eee;border-radius:16px;text-align:center;cursor:pointer;transition:all 0.3s;}
+.rc:hover{border-color:#667eea;background:#f8f9ff;transform:translateY(-5px);}
+.rc .icon{font-size:3rem;margin-bottom:10px;display:block;}
+.rc h4{font-size:1rem;font-weight:700;color:#333;}
+.rc span{font-size:0.75rem;color:#aaa;}
+.form-area{display:none;}
+.role-header{display:flex;align-items:center;gap:12px;margin-bottom:18px;}
+.rh-icon{width:45px;height:45px;border-radius:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.1rem;}
+.rh-title{font-size:1.3rem;font-weight:800;color:#333;}
+.tabs{display:flex;background:#f5f5f5;border-radius:10px;padding:4px;margin-bottom:18px;}
+.tab{flex:1;padding:9px;text-align:center;border:none;background:transparent;font-family:'Poppins',sans-serif;font-size:0.83rem;font-weight:600;color:#aaa;cursor:pointer;border-radius:8px;transition:all 0.3s;}
+.tab.active{background:#fff;color:#667eea;box-shadow:0 2px 8px rgba(0,0,0,0.08);}
+.panel{display:none;}
+.panel.active{display:block;}
+.login-method{display:flex;background:#f5f5f5;border-radius:10px;padding:4px;margin-bottom:16px;}
+.lm-btn{flex:1;padding:8px;text-align:center;border:none;background:transparent;font-family:'Poppins',sans-serif;font-size:0.78rem;font-weight:600;color:#aaa;cursor:pointer;border-radius:8px;transition:all 0.3s;}
+.lm-btn.active{background:#fff;color:#667eea;box-shadow:0 2px 8px rgba(0,0,0,0.08);}
+.fg{margin-bottom:13px;}
+.fg label{display:block;font-size:0.79rem;font-weight:600;color:#555;margin-bottom:5px;}
+.fg input{width:100%;padding:12px 14px;border:2px solid #eee;border-radius:10px;font-size:0.88rem;font-family:'Poppins',sans-serif;outline:none;transition:all 0.3s;color:#333;}
+.fg input:focus{border-color:#667eea;}
+.mobile-row{display:flex;gap:8px;}
+.mobile-row input:first-child{width:70px;flex-shrink:0;text-align:center;color:#667eea;font-weight:700;}
+.mobile-row input:last-child{flex:1;}
+.role-pick{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:13px;}
+.rp{position:relative;}
+.rp input{position:absolute;opacity:0;}
+.rp-label{display:flex;align-items:center;gap:8px;padding:10px 13px;border:2px solid #eee;border-radius:10px;cursor:pointer;transition:all 0.3s;font-size:0.83rem;font-weight:600;color:#333;}
+.rp-label:hover{border-color:#667eea;}
+.rp input:checked + .rp-label{border-color:#667eea;background:#f0f3ff;}
+.btnx{width:100%;padding:13px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:11px;font-size:0.92rem;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif;margin-top:5px;transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btnx:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(102,126,234,0.5);}
+.btnx:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
+.btn-secondary{width:100%;padding:11px;background:transparent;color:#667eea;border:2px solid #667eea;border-radius:11px;font-size:0.85rem;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif;margin-top:8px;transition:all 0.3s;}
+.btn-secondary:hover{background:#667eea;color:#fff;}
+.btn-back{width:100%;padding:11px;background:transparent;color:#aaa;border:2px solid #eee;border-radius:11px;font-size:0.83rem;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;margin-top:8px;transition:all 0.3s;}
+.btn-back:hover{border-color:#667eea;color:#667eea;}
+.msg{padding:10px 13px;border-radius:9px;font-size:0.81rem;font-weight:500;margin-bottom:12px;display:none;align-items:center;gap:7px;}
+.msg.show{display:flex;}
+.msg.err{background:#fff0f0;border:1.5px solid #fcc;color:#c00;}
+.msg.ok{background:#f0fff4;border:1.5px solid #b7f0ca;color:#007a33;}
+/* OTP Sent Box - NO OTP DISPLAYED */
+.otp-sent-box{background:linear-gradient(135deg,#f0fff4,#e6ffed);border:2px solid #b7f0ca;border-radius:14px;padding:20px;text-align:center;margin-bottom:14px;}
+.otp-sent-box .sms-icon{font-size:2.5rem;margin-bottom:10px;display:block;}
+.otp-sent-box h4{font-size:1rem;font-weight:700;color:#007a33;margin-bottom:6px;}
+.otp-sent-box p{font-size:0.78rem;color:#555;}
+.otp-sent-box .mobile-shown{font-size:0.9rem;font-weight:700;color:#333;margin-top:6px;}
+.otp-timer{font-size:0.78rem;color:#e74c3c;font-weight:600;text-align:center;margin-bottom:12px;padding:8px;background:#fff5f5;border-radius:8px;}
+.otp-input-big{width:100%;padding:16px;border:2.5px solid #eee;border-radius:12px;font-size:1.5rem;font-weight:800;letter-spacing:10px;text-align:center;font-family:'Poppins',sans-serif;outline:none;transition:all 0.3s;color:#333;}
+.otp-input-big:focus{border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,0.15);}
+/* Register steps */
+.step-indicator{display:flex;align-items:center;gap:8px;margin-bottom:16px;}
+.step{width:28px;height:28px;border-radius:50%;background:#eee;color:#aaa;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;transition:all 0.3s;}
+.step.active{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;}
+.step.done{background:#38ef7d;color:#fff;}
+.step-line{flex:1;height:2px;background:#eee;transition:all 0.3s;}
+.step-line.done{background:#38ef7d;}
+.uid-result{background:linear-gradient(135deg,#f0f3ff,#e8edff);border:2px solid #667eea;border-radius:11px;padding:15px;text-align:center;margin-top:13px;display:none;}
+.uid-result.show{display:block;}
+.uid-result p{font-size:0.75rem;color:#999;margin-bottom:4px;}
+.uid-result h3{font-size:1.8rem;font-weight:800;color:#667eea;}
+.uid-result small{font-size:0.71rem;color:#aaa;}
+.demo{background:#fffbe6;border:1.5px solid #ffe066;border-radius:9px;padding:10px 13px;margin-bottom:13px;font-size:0.77rem;color:#856404;}
+.demo strong{display:block;margin-bottom:3px;}
+</style>
+</head>
+<body>
+
+<div class="logo"><i class="fas fa-graduation-cap"></i> EduConnect</div>
+
+<div class="box">
+
+  <!-- STEP 1: ROLE SELECT -->
+  <div id="step1">
+    <h2>Welcome! 👋</h2>
+    <p>Who are you? Select your role to continue</p>
+    <div class="role-cards">
+      <div class="rc" onclick="pickRole('teacher')">
+        <span class="icon">👨‍🏫</span>
+        <h4>Teacher</h4>
+        <span>I teach classes</span>
+      </div>
+      <div class="rc" onclick="pickRole('student')">
+        <span class="icon">👨‍🎓</span>
+        <h4>Student</h4>
+        <span>I attend classes</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2: FORMS -->
+  <div class="form-area" id="step2">
+
+    <div class="role-header">
+      <div class="rh-icon" id="rh-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+      <div class="rh-title" id="rh-title">Teacher</div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('login')"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+      <button class="tab" onclick="switchTab('register')"><i class="fas fa-user-plus"></i> Create Account</button>
+    </div>
+
+    <!-- ===== LOGIN PANEL ===== -->
+    <div class="panel active" id="panel-login">
+      <div class="login-method">
+        <button class="lm-btn active" id="lm-pass" onclick="switchLoginMethod('password')"><i class="fas fa-lock"></i> Password</button>
+        <button class="lm-btn" id="lm-otp" onclick="switchLoginMethod('otp')"><i class="fas fa-mobile-alt"></i> Mobile OTP</button>
+      </div>
+
+      <!-- PASSWORD LOGIN -->
+      <div id="pw-section">
+        <div class="demo"><strong>🔑 Demo Login:</strong><span id="demo-text">teacher@educonnect.com / password</span></div>
+        <div class="msg err" id="lerr"></div>
+        <div class="msg ok" id="lok"></div>
+        <div class="fg"><label>Email</label><input type="email" id="l-email" placeholder="your@email.com"/></div>
+        <div class="fg"><label>Password</label><input type="password" id="l-pass" placeholder="Your password" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+        <button class="btnx" id="lbtn" onclick="doLogin()"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+      </div>
+
+      <!-- MOBILE OTP LOGIN -->
+      <div id="otp-section" style="display:none;">
+        <div class="msg err" id="lotp-err"></div>
+        <div class="msg ok" id="lotp-ok"></div>
+
+        <!-- Enter mobile -->
+        <div id="lotp-step1">
+          <div class="fg">
+            <label>Mobile Number</label>
+            <div class="mobile-row">
+              <input type="text" value="+91" readonly/>
+              <input type="tel" id="login-mobile" placeholder="10-digit number" maxlength="10"/>
+            </div>
+          </div>
+          <button class="btnx" id="lotp-send-btn" onclick="sendLoginOTP()"><i class="fas fa-paper-plane"></i> Send OTP</button>
+        </div>
+
+        <!-- Enter OTP — NO OTP SHOWN ON SCREEN -->
+        <div id="lotp-step2" style="display:none;">
+          <div class="otp-sent-box">
+            <span class="sms-icon">📱</span>
+            <h4>OTP Sent Successfully!</h4>
+            <p>We sent a 6-digit OTP via SMS to</p>
+            <div class="mobile-shown" id="lotp-mobile-shown">+91 XXXXXXXXXX</div>
+            <p style="margin-top:6px;font-size:0.72rem;color:#888;">Check your SMS inbox</p>
+          </div>
+          <div class="otp-timer" id="lotp-timer">⏱ OTP expires in 5:00</div>
+          <div class="fg">
+            <label>Enter 6-Digit OTP</label>
+            <input type="tel" class="otp-input-big" id="lotp-input" placeholder="• • • • • •" maxlength="6" onkeydown="if(event.key==='Enter')verifyLoginOTP()"/>
+          </div>
+          <button class="btnx" id="lotp-verify-btn" onclick="verifyLoginOTP()"><i class="fas fa-check-circle"></i> Verify & Login</button>
+          <button class="btn-secondary" onclick="resetLoginOTP()"><i class="fas fa-redo"></i> Resend OTP</button>
+        </div>
+      </div>
+
+      <button class="btn-back" onclick="backToRoles()"><i class="fas fa-arrow-left"></i> Back</button>
+    </div>
+
+    <!-- ===== REGISTER PANEL ===== -->
+    <div class="panel" id="panel-register">
+      <div class="step-indicator">
+        <div class="step active" id="rstep1-dot">1</div>
+        <div class="step-line" id="rline1"></div>
+        <div class="step" id="rstep2-dot">2</div>
+        <div class="step-line" id="rline2"></div>
+        <div class="step" id="rstep3-dot">3</div>
+      </div>
+
+      <div class="msg err" id="rerr"></div>
+      <div class="msg ok" id="rok"></div>
+
+      <!-- STEP 1: Details -->
+      <div id="reg-step1">
+        <div style="font-size:0.82rem;font-weight:700;color:#667eea;margin-bottom:12px;">Step 1 — Your Details</div>
+        <div style="font-size:0.79rem;font-weight:600;color:#555;margin-bottom:8px;">Register as:</div>
+        <div class="role-pick">
+          <div class="rp"><input type="radio" name="rp" id="rp-t" value="teacher" checked/><label class="rp-label" for="rp-t">👨‍🏫 Teacher</label></div>
+          <div class="rp"><input type="radio" name="rp" id="rp-s" value="student"/><label class="rp-label" for="rp-s">👨‍🎓 Student</label></div>
+        </div>
+        <div class="fg"><label>Full Name</label><input type="text" id="r-name" placeholder="Your full name"/></div>
+        <div class="fg"><label>Email Address</label><input type="email" id="r-email" placeholder="your@email.com"/></div>
+        <div class="fg"><label>Password</label><input type="password" id="r-pass" placeholder="Min. 6 characters"/></div>
+        <div class="fg">
+          <label>Mobile Number</label>
+          <div class="mobile-row">
+            <input type="text" value="+91" readonly/>
+            <input type="tel" id="r-mobile" placeholder="10-digit number" maxlength="10"/>
+          </div>
+        </div>
+        <button class="btnx" id="reg-next-btn" onclick="sendRegisterOTP()"><i class="fas fa-mobile-alt"></i> Verify Mobile & Continue</button>
+      </div>
+
+      <!-- STEP 2: Verify OTP — NO OTP SHOWN -->
+      <div id="reg-step2" style="display:none;">
+        <div style="font-size:0.82rem;font-weight:700;color:#667eea;margin-bottom:12px;">Step 2 — Verify Mobile Number</div>
+        <div class="otp-sent-box">
+          <span class="sms-icon">📱</span>
+          <h4>OTP Sent Successfully!</h4>
+          <p>We sent a 6-digit OTP via SMS to</p>
+          <div class="mobile-shown" id="reg-mobile-shown">+91 XXXXXXXXXX</div>
+          <p style="margin-top:6px;font-size:0.72rem;color:#888;">Check your SMS inbox</p>
+        </div>
+        <div class="otp-timer" id="reg-otp-timer">⏱ OTP expires in 5:00</div>
+        <div class="fg">
+          <label>Enter 6-Digit OTP</label>
+          <input type="tel" class="otp-input-big" id="reg-otp-input" placeholder="• • • • • •" maxlength="6" onkeydown="if(event.key==='Enter')verifyRegisterOTP()"/>
+        </div>
+        <button class="btnx" id="reg-verify-btn" onclick="verifyRegisterOTP()"><i class="fas fa-check-circle"></i> Verify OTP</button>
+        <button class="btn-secondary" onclick="resendRegisterOTP()"><i class="fas fa-redo"></i> Resend OTP</button>
+      </div>
+
+      <!-- STEP 3: Create Account -->
+      <div id="reg-step3" style="display:none;">
+        <div style="font-size:0.82rem;font-weight:700;color:#38a169;margin-bottom:12px;"><i class="fas fa-check-circle"></i> Step 3 — Mobile Verified! Create Account</div>
+        <div style="background:#f0fff4;border:2px solid #b7f0ca;border-radius:10px;padding:14px;margin-bottom:14px;">
+          <div style="font-size:0.85rem;color:#333;margin-bottom:6px;"><i class="fas fa-mobile-alt" style="color:#38a169"></i> Mobile <strong id="verified-mobile-display"></strong> ✅ Verified</div>
+          <div style="font-size:0.85rem;color:#333;"><i class="fas fa-envelope" style="color:#667eea"></i> Email: <strong id="verified-email-display"></strong></div>
+        </div>
+        <button class="btnx" id="reg-create-btn" onclick="doRegister()"><i class="fas fa-user-plus"></i> Create My Account</button>
+      </div>
+
+      <div class="uid-result" id="uid-result">
+        <p>🎉 Account Created Successfully!</p>
+        <h3 id="uid-val">TCH-0001</h3>
+        <small>Your Unique ID — Save this!</small>
+      </div>
+
+      <button class="btn-back" onclick="backToRoles()"><i class="fas fa-arrow-left"></i> Back</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const API = 'http://localhost:5000/api';
+let selectedRole = 'teacher';
+window.verifiedOTP = '';
+
+function pickRole(role) {
+  selectedRole = role;
+  document.getElementById('step1').style.display = 'none';
+  document.getElementById('step2').style.display = 'block';
+  if (role === 'teacher') {
+    document.getElementById('rh-icon').innerHTML = '<i class="fas fa-chalkboard-teacher"></i>';
+    document.getElementById('rh-title').textContent = 'Teacher';
+    document.getElementById('demo-text').textContent = 'teacher@educonnect.com / password';
+    document.getElementById('rp-t').checked = true;
+  } else {
+    document.getElementById('rh-icon').innerHTML = '<i class="fas fa-user-graduate"></i>';
+    document.getElementById('rh-title').textContent = 'Student';
+    document.getElementById('demo-text').textContent = 'priya@educonnect.com / password';
+    document.getElementById('rp-s').checked = true;
+  }
+}
+
+function backToRoles() {
+  document.getElementById('step2').style.display = 'none';
+  document.getElementById('step1').style.display = 'block';
+  clearAllTimers();
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach((b, i) => b.classList.toggle('active', (i === 0 && tab === 'login') || (i === 1 && tab === 'register')));
+  document.getElementById('panel-login').classList.toggle('active', tab === 'login');
+  document.getElementById('panel-register').classList.toggle('active', tab === 'register');
+}
+
+function switchLoginMethod(method) {
+  document.getElementById('lm-pass').classList.toggle('active', method === 'password');
+  document.getElementById('lm-otp').classList.toggle('active', method === 'otp');
+  document.getElementById('pw-section').style.display = method === 'password' ? 'block' : 'none';
+  document.getElementById('otp-section').style.display = method === 'otp' ? 'block' : 'none';
+}
+
+function showMsg(id, msg, type) {
+  const el = document.getElementById(id);
+  el.innerHTML = '<i class="fas fa-' + (type === 'ok' ? 'check' : 'exclamation') + '-circle"></i> ' + msg;
+  el.className = 'msg ' + type + ' show';
+  setTimeout(() => el.classList.remove('show'), 6000);
+}
+
+function startTimer(displayId, seconds, onExpire) {
+  clearInterval(window[displayId + '_iv']);
+  window[displayId + '_iv'] = setInterval(() => {
+    seconds--;
+    const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+    const s = (seconds % 60).toString().padStart(2, '0');
+    const el = document.getElementById(displayId);
+    if (el) el.textContent = `⏱ OTP expires in ${m}:${s}`;
+    if (seconds <= 0) {
+      clearInterval(window[displayId + '_iv']);
+      if (el) el.textContent = '❌ OTP expired! Please resend.';
+      if (onExpire) onExpire();
+    }
+  }, 1000);
+}
+
+function clearAllTimers() {
+  clearInterval(window['lotp-timer_iv']);
+  clearInterval(window['reg-otp-timer_iv']);
+}
+
+// ── PASSWORD LOGIN ────────────────────────────────────────────────────────────
+async function doLogin() {
+  const email = document.getElementById('l-email').value.trim();
+  const pass = document.getElementById('l-pass').value;
+  if (!email || !pass) return showMsg('lerr', 'Please enter email and password.', 'err');
+  const btn = document.getElementById('lbtn');
+  btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
+  try {
+    const res = await fetch(API + '/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password: pass }) });
+    const data = await res.json();
+    if (data.success) {
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      showMsg('lok', 'Login successful! Redirecting...', 'ok');
+      setTimeout(() => { window.location.href = data.user.role === 'teacher' ? '/teacher-dashboard.html' : '/student-dashboard.html'; }, 800);
+    } else {
+      showMsg('lerr', data.message || 'Invalid email or password.', 'err');
+      btn.disabled = false; btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+    }
+  } catch (e) {
+    showMsg('lerr', 'Cannot connect to server.', 'err');
+    btn.disabled = false; btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+  }
+}
+
+// ── MOBILE OTP LOGIN ──────────────────────────────────────────────────────────
+async function sendLoginOTP() {
+  const mobile = document.getElementById('login-mobile').value.trim();
+  if (!mobile || mobile.length !== 10) return showMsg('lotp-err', 'Enter a valid 10-digit mobile number.', 'err');
+  const btn = document.getElementById('lotp-send-btn');
+  btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending OTP...';
+  try {
+    const res = await fetch(API + '/auth/send-login-otp', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mobile }) });
+    const data = await res.json();
+    if (data.success) {
+      document.getElementById('lotp-step1').style.display = 'none';
+      document.getElementById('lotp-step2').style.display = 'block';
+      document.getElementById('lotp-mobile-shown').textContent = '+91 ' + mobile.replace(/(\d{5})(\d{5})/, '$1 $2');
+      showMsg('lotp-ok', 'OTP sent! Check your SMS inbox.', 'ok');
+      startTimer('lotp-timer', 300, () => { document.getElementById('lotp-verify-btn').disabled = true; });
+    } else {
+      showMsg('lotp-err', data.message, 'err');
+      btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send OTP';
+    }
+  } catch (e) {
+    showMsg('lotp-err', 'Cannot connect to server.', 'err');
+    btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send OTP';
+  }
+}
+
+async function verifyLoginOTP() {
+  const mobile = document.getElementById('login-mobile').value.trim();
+  const otp = document.getElementById('lotp-input').value.trim();
+  if (!otp || otp.length !== 6) return showMsg('lotp-err', 'Enter the 6-digit OTP from your SMS.', 'err');
+  const btn = document.getElementById('lotp-verify-btn');
+  btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+  try {
+    const res = await fetch(API + '/auth/verify-login-otp', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mobile, otp }) });
+    const data = await res.json();
+    if (data.success) {
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      clearInterval(window['lotp-timer_iv']);
+      showMsg('lotp-ok', '✅ Verified! Redirecting...', 'ok');
+      setTimeout(() => { window.location.href = data.user.role === 'teacher' ? '/teacher-dashboard.html' : '/student-dashboard.html'; }, 800);
+    } else {
+      showMsg('lotp-err', data.message, 'err');
+      btn.disabled = false; btn.innerHTML = '<i class="fas fa-check-circle"></i> Verify & Login';
+    }
+  } catch (e) {
+    showMsg('lotp-err', 'Cannot connect to server.', 'err');
+    btn.disabled = false; btn.innerHTML = '<i class="fas fa-check-circle"></i> Verify & Login';
+  }
+}
+
+function resetLoginOTP() {
+  clearInterval(window['lotp-timer_iv']);
+  document.getElementById('lotp-step1').style.display = 'block';
+  document.getElementById('lotp-step2').style.display = 'none';
+  document.getElementById('lotp-input').value = '';
+  const btn = document.getElementById('lotp-send-btn');
+  btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send OTP';
+  const vbtn = document.getElementById('lotp-verify-btn');
+  vbtn.disabled = false; vbtn.innerHTML = '<i class="fas fa-check-circle"></i> Verify & Login';
+}
+
+// ── REGISTER ─────────────────────────────────────────────────────────────────
+function updateStepUI(step) {
+  [1, 2, 3].forEach(i => {
+    const dot = document.getElementById(`rstep${i}-dot`);
+    if (i < step) { dot.className = 'step done'; dot.innerHTML = '<i class="fas fa-check"></i>'; }
+    else if (i === step) { dot.className = 'step active'; dot.textContent = i; }
+    else { dot.className = 'step'; dot.textContent = i; }
+  });
+  [1, 2].forEach(i => {
+    document.getElementById(`rline${i}`).className = 'step-line' + (i < step ? ' done' : '');
+  });
+}
+
+async function sendRegisterOTP() {
+  const full_name = document.getElementById('r-name').value.trim();
+  const email = document.getElementById('r-email').value.trim();
+  const password = document.getElementById('r-pass').value;
+  const mobile = document.getElementById('r-mobile').value.trim();
+  if (!full_name || !email || !password || !mobile) return showMsg('rerr', 'All fields are required.', 'err');
+  if (password.length < 6) return showMsg('rerr', 'Password must be at least 6 characters.', 'err');
+  if (mobile.length !== 10 || !/^[6-9]\d{9}$/.test(mobile)) return showMsg('rerr', 'Enter a valid 10-digit Indian mobile number.', 'err');
+  const btn = document.getElementById('reg-next-btn');
+  btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending OTP...';
+  try {
+    const res = await fetch(API + '/auth/send-register-otp', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mobile, email, full_name }) });
+    const data = await res.json();
+    if (data.success) {
+      document.getElementById('reg-step1').style.display = 'none';
+      document.getElementById('reg-step2').style.display = 'block';
+      document.getElementById('reg-mobile-shown').textContent = '+91 ' + mobile.replace(/(\d{5})(\d{5})/, '$1 $2');
+      showMsg('rok', 'OTP sent to +91' + mobile + '! Check your SMS.', 'ok');
+      updateStepUI(2);
+      startTimer('reg-otp-timer', 300, () => { document.getElementById('reg-verify-btn').disabled = true; });
+    } else {
+      showMsg('rerr', data.message, 'err');
+      btn.disabled = false; btn.innerHTML = '<i class="fas fa-mobile-alt"></i> Verify Mobile & Continue';
+    }
+  } catch (e) {
+    showMsg('rerr', 'Cannot connect to server.', 'err');
+    btn.disabled = false; btn.innerHTML = '<i class="fas fa-mobile-alt"></i> Verify Mobile & Continue';
+  }
+}
+
+async function verifyRegisterOTP() {
+  const mobile = document.getElementById('r-mobile').value.trim();
+  const otp = document.getElementById('reg-otp-input').value.trim();
+  if (!otp || otp.length !== 6) return showMsg('rerr', 'Enter the 6-digit OTP from your SMS.', 'err');
+  const btn = document.getElementById('reg-verify-btn');
+  btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+  try {
+    const res = await fetch(API + '/auth/verify-register-otp', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mobile, otp }) });
+    const data = await res.json();
+    if (data.success) {
+      window.verifiedOTP = otp;
+      clearInterval(window['reg-otp-timer_iv']);
+      document.getElementById('reg-step2').style.display = 'none';
+      document.getElementById('reg-step3').style.display = 'block';
+      document.getElementById('verified-mobile-display').textContent = '+91' + mobile;
+      document.getElementById('verified-email-display').textContent = document.getElementById('r-email').value;
+      updateStepUI(3);
+      showMsg('rok', '✅ Mobile number verified!', 'ok');
+    } else {
+      showMsg('rerr', data.message, 'err');
+      btn.disabled = false; btn.innerHTML = '<i class="fas fa-check-circle"></i> Verify OTP';
+    }
+  } catch (e) {
+    showMsg('rerr', 'Cannot connect to server.', 'err');
+    btn.disabled = false; btn.innerHTML = '<i class="fas fa-check-circle"></i> Verify OTP';
+  }
+}
+
+function resendRegisterOTP() {
+  clearInterval(window['reg-otp-timer_iv']);
+  document.getElementById('reg-step2').style.display = 'none';
+  document.getElementById('reg-step1').style.display = 'block';
+  document.getElementById('reg-otp-input').value = '';
+  updateStepUI(1);
+  const btn = document.getElementById('reg-next-btn');
+  btn.disabled = false; btn.innerHTML = '<i class="fas fa-mobile-alt"></i> Verify Mobile & Continue';
+  const vbtn = document.getElementById('reg-verify-btn');
+  vbtn.disabled = false; vbtn.innerHTML = '<i class="fas fa-check-circle"></i> Verify OTP';
+}
+
+async function doRegister() {
+  const role = document.querySelector('input[name="rp"]:checked').value;
+  const full_name = document.getElementById('r-name').value.trim();
+  const email = document.getElementById('r-email').value.trim();
+  const password = document.getElementById('r-pass').value;
+  const phone = document.getElementById('r-mobile').value.trim();
+  const btn = document.getElementById('reg-create-btn');
+  btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
+  try {
+    const res = await fetch(API + '/auth/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ full_name, email, password, role, phone, otp: window.verifiedOTP, mobile_verified: true }) });
+    const data = await res.json();
+    if (data.success) {
+      document.getElementById('uid-val').textContent = data.unique_id;
+      document.getElementById('uid-result').classList.add('show');
+      document.getElementById('reg-step3').style.display = 'none';
+      showMsg('rok', '🎉 Account created! Your ID: ' + data.unique_id, 'ok');
+      btn.innerHTML = '<i class="fas fa-check"></i> Created!';
+      setTimeout(() => {
+        document.getElementById('l-email').value = email;
+        switchTab('login');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-user-plus"></i> Create My Account';
+      }, 3000);
+    } else {
+      showMsg('rerr', data.message, 'err');
+      btn.disabled = false; btn.innerHTML = '<i class="fas fa-user-plus"></i> Create My Account';
+    }
+  } catch (e) {
+    showMsg('rerr', 'Cannot connect to server.', 'err');
+    btn.disabled = false; btn.innerHTML = '<i class="fas fa-user-plus"></i> Create My Account';
+  }
+}
+</script>
+</body>
+</html>

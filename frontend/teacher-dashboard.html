@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Teacher Dashboard — EduConnect</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Poppins',sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;}
+/* HEADER */
+header{background:rgba(255,255,255,0.97);padding:14px 25px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 4px 20px rgba(0,0,0,0.12);position:sticky;top:0;z-index:100;}
+.h-logo{display:flex;align-items:center;gap:10px;font-size:1.25rem;font-weight:800;color:#667eea;}
+.h-logo i{animation:spin 4s ease-in-out infinite;}
+@keyframes spin{0%,100%{transform:rotate(0);}50%{transform:rotate(15deg);}}
+.h-right{display:flex;align-items:center;gap:14px;}
+.h-user{display:flex;align-items:center;gap:10px;}
+.h-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem;}
+.h-name{font-size:0.88rem;font-weight:600;color:#333;}
+.h-uid{font-size:0.72rem;color:#667eea;font-weight:600;}
+.h-notif{position:relative;cursor:pointer;width:38px;height:38px;border-radius:50%;background:#f5f5f5;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
+.h-notif:hover{background:#e8edff;}
+.h-notif i{color:#667eea;font-size:1rem;}
+.notif-badge{position:absolute;top:-2px;right:-2px;width:16px;height:16px;background:#ff4757;border-radius:50%;font-size:0.6rem;color:#fff;display:flex;align-items:center;justify-content:center;}
+.btn-logout{padding:9px 20px;background:linear-gradient(135deg,#ff6b6b,#ee5a6f);color:#fff;border:none;border-radius:20px;font-size:0.82rem;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;transition:all 0.3s;}
+.btn-logout:hover{transform:translateY(-2px);box-shadow:0 5px 15px rgba(255,107,107,0.4);}
+/* LAYOUT */
+.layout{display:flex;min-height:calc(100vh - 68px);}
+/* SIDEBAR */
+.sidebar{width:265px;background:rgba(255,255,255,0.97);min-height:calc(100vh - 68px);padding:25px 0;box-shadow:2px 0 15px rgba(0,0,0,0.08);flex-shrink:0;}
+.sb-section{padding:0 20px;margin-bottom:8px;font-size:0.7rem;font-weight:700;color:#bbb;letter-spacing:2px;text-transform:uppercase;margin-top:16px;}
+.sb-btn{display:flex;align-items:center;gap:12px;padding:13px 22px;color:#666;cursor:pointer;transition:all 0.25s;font-size:0.88rem;font-weight:500;border-left:3px solid transparent;border:none;background:transparent;width:100%;font-family:'Poppins',sans-serif;}
+.sb-btn i{width:20px;text-align:center;font-size:0.95rem;transition:all 0.3s;}
+.sb-btn:hover{background:#f8f9ff;color:#667eea;transform:translateX(5px);}
+.sb-btn.active{background:linear-gradient(90deg,rgba(102,126,234,0.12),rgba(102,126,234,0.04));color:#667eea;border-left:3px solid #667eea;font-weight:600;}
+.sb-btn.active i{transform:scale(1.1);}
+/* CONTENT */
+.content{flex:1;padding:28px;overflow-y:auto;}
+.panel{display:none;animation:fadeIn 0.4s ease;}
+.panel.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(15px);}to{opacity:1;transform:translateY(0);}}
+.page-title{font-size:1.5rem;font-weight:800;color:#fff;margin-bottom:22px;display:flex;align-items:center;gap:12px;}
+.page-title i{background:rgba(255,255,255,0.2);padding:10px;border-radius:12px;}
+/* CARDS */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px;margin-bottom:24px;}
+.stat-card{background:rgba(255,255,255,0.97);border-radius:18px;padding:22px;display:flex;align-items:center;gap:16px;box-shadow:0 5px 20px rgba(0,0,0,0.1);cursor:pointer;transition:all 0.3s;}
+.stat-card:hover{transform:translateY(-5px);box-shadow:0 12px 35px rgba(0,0,0,0.18);}
+.sc-icon{width:55px;height:55px;border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:#fff;flex-shrink:0;}
+.sci-a{background:linear-gradient(135deg,#667eea,#764ba2);}
+.sci-b{background:linear-gradient(135deg,#11998e,#38ef7d);}
+.sci-c{background:linear-gradient(135deg,#f093fb,#f5576c);}
+.sci-d{background:linear-gradient(135deg,#4facfe,#00f2fe);}
+.sci-e{background:linear-gradient(135deg,#f7971e,#ffd200);}
+.sc-num{font-size:1.8rem;font-weight:800;color:#333;}
+.sc-label{font-size:0.75rem;color:#999;margin-top:1px;}
+/* WHITE CARD */
+.wcard{background:rgba(255,255,255,0.97);border-radius:18px;padding:28px;box-shadow:0 5px 20px rgba(0,0,0,0.1);margin-bottom:22px;}
+.wcard-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;padding-bottom:16px;border-bottom:2px solid #f5f5f5;}
+.wcard-title{font-size:1.1rem;font-weight:700;color:#333;display:flex;align-items:center;gap:10px;}
+.wcard-title i{color:#667eea;}
+/* BUTTONS */
+.btn{padding:11px 22px;border:none;border-radius:10px;font-size:0.85rem;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;transition:all 0.3s;display:inline-flex;align-items:center;gap:7px;}
+.btn-primary{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;box-shadow:0 4px 15px rgba(102,126,234,0.35);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(102,126,234,0.5);}
+.btn-success{background:linear-gradient(135deg,#11998e,#38ef7d);color:#fff;}
+.btn-success:hover{transform:translateY(-2px);}
+.btn-danger{background:linear-gradient(135deg,#ff6b6b,#ee5a6f);color:#fff;}
+.btn-danger:hover{transform:translateY(-2px);}
+.btn-outline{background:transparent;color:#667eea;border:2px solid #667eea;}
+.btn-outline:hover{background:#667eea;color:#fff;}
+.btn-sm{padding:7px 14px;font-size:0.78rem;}
+/* TABLE */
+.tbl-wrap{overflow:hidden;border-radius:12px;border:1.5px solid #f0f0f0;}
+table{width:100%;border-collapse:collapse;}
+th{background:#f8f9ff;padding:12px 16px;text-align:left;font-size:0.78rem;color:#999;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;border-bottom:1.5px solid #f0f0f0;}
+td{padding:14px 16px;font-size:0.86rem;color:#555;border-bottom:1px solid #fafafa;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#fafbff;}
+/* BADGE */
+.bdg{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:50px;font-size:0.75rem;font-weight:600;}
+.bdg-green{background:#e8fff5;color:#00a854;}
+.bdg-red{background:#fff0f0;color:#cc0000;}
+.bdg-blue{background:#f0f5ff;color:#1a73e8;}
+.bdg-yellow{background:#fffbe6;color:#b8860b;}
+.bdg-live{background:#fff0f0;color:#cc0000;animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.6;}}
+/* FORM */
+.fg{margin-bottom:16px;}
+.fg label{display:block;font-size:0.82rem;font-weight:600;color:#555;margin-bottom:6px;}
+.fg input,.fg textarea,.fg select{width:100%;padding:12px 15px;border:2px solid #e8e8e8;border-radius:10px;font-size:0.88rem;font-family:'Poppins',sans-serif;transition:all 0.3s;color:#333;outline:none;}
+.fg input:focus,.fg textarea:focus,.fg select:focus{border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,0.1);}
+.fg textarea{resize:vertical;min-height:90px;}
+/* NOTES TYPE SELECTOR */
+.notes-type{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;}
+.nt-opt{position:relative;}
+.nt-opt input{position:absolute;opacity:0;width:0;height:0;}
+.nt-label{display:flex;align-items:center;gap:10px;padding:14px 16px;border:2px solid #e8e8e8;border-radius:12px;cursor:pointer;transition:all 0.3s;}
+.nt-label:hover{border-color:#667eea;}
+.nt-opt input:checked + .nt-label{border-color:#667eea;background:#f0f3ff;}
+.nt-label i{font-size:1.2rem;color:#667eea;}
+.nt-label span{font-size:0.85rem;font-weight:600;color:#333;}
+/* ITEM CARDS */
+.item-card{background:#f8f9ff;border-radius:14px;padding:18px;margin-bottom:14px;border-left:4px solid #667eea;transition:all 0.3s;}
+.item-card:hover{transform:translateX(6px);box-shadow:0 6px 20px rgba(0,0,0,0.08);}
+.item-card h4{font-size:0.95rem;font-weight:700;color:#333;margin-bottom:6px;display:flex;align-items:center;gap:8px;}
+.item-card p{font-size:0.82rem;color:#888;margin:4px 0;display:flex;align-items:center;gap:6px;}
+.item-card p i{color:#bbb;width:15px;}
+.item-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
+/* MODAL */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:200;align-items:center;justify-content:center;padding:15px;}
+.modal-bg.open{display:flex;}
+.modal{background:#fff;border-radius:22px;padding:30px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;animation:modalIn 0.35s ease;}
+@keyframes modalIn{from{opacity:0;transform:scale(0.92) translateY(20px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.modal-title{font-size:1.2rem;font-weight:800;color:#333;margin-bottom:22px;display:flex;justify-content:space-between;align-items:center;}
+.modal-close{background:none;border:none;color:#bbb;cursor:pointer;font-size:1.1rem;padding:4px;transition:color 0.2s;}
+.modal-close:hover{color:#ff6b6b;}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;}
+/* ALERT */
+.alert{padding:11px 15px;border-radius:10px;font-size:0.83rem;font-weight:500;margin-bottom:14px;display:none;align-items:center;gap:8px;}
+.alert.show{display:flex;}
+.alert.success{background:#e8fff5;border:1.5px solid #b7f0ca;color:#007a33;}
+.alert.error{background:#fff0f0;border:1.5px solid #ffcccc;color:#cc0000;}
+/* EMPTY */
+.empty{text-align:center;padding:50px 20px;color:#ccc;}
+.empty i{font-size:3.5rem;margin-bottom:16px;display:block;animation:float 3s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-12px);}}
+.empty p{font-size:1rem;}
+/* ATTENDANCE BAR */
+.att-wrap{height:8px;background:#eee;border-radius:50px;overflow:hidden;margin-top:6px;}
+.att-fill{height:100%;border-radius:50px;background:linear-gradient(90deg,#11998e,#38ef7d);}
+/* QUICK ACTIONS GRID */
+.qa-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;margin-bottom:24px;}
+.qa-card{background:rgba(255,255,255,0.97);border-radius:16px;padding:25px 20px;text-align:center;cursor:pointer;transition:all 0.3s;box-shadow:0 4px 15px rgba(0,0,0,0.08);}
+.qa-card:hover{transform:translateY(-6px);box-shadow:0 12px 30px rgba(0,0,0,0.15);background:linear-gradient(135deg,#667eea,#764ba2);}
+.qa-card:hover i,.qa-card:hover p{color:#fff!important;}
+.qa-card i{font-size:2rem;color:#667eea;margin-bottom:10px;display:block;transition:all 0.3s;}
+.qa-card p{font-size:0.85rem;font-weight:700;color:#555;transition:all 0.3s;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="h-logo"><i class="fas fa-graduation-cap"></i> EduConnect</div>
+  <div class="h-right">
+    <div class="h-notif" onclick="loadNotifications()"><i class="fas fa-bell"></i><span class="notif-badge" id="nCount">0</span></div>
+    <div class="h-user">
+      <div class="h-avatar" id="hAvatar">T</div>
+      <div><div class="h-name" id="hName">Teacher</div><div class="h-uid" id="hUid">TCH-0000</div></div>
+    </div>
+    <button class="btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sb-section">Main</div>
+    <button class="sb-btn active" onclick="showPanel('home')"><i class="fas fa-home"></i> Dashboard</button>
+    <button class="sb-btn" onclick="showPanel('classes')"><i class="fas fa-book"></i> My Classrooms</button>
+    <div class="sb-section">Teaching</div>
+    <button class="sb-btn" onclick="showPanel('schedule')"><i class="fas fa-calendar-alt"></i> Schedule Class</button>
+    <button class="sb-btn" onclick="showPanel('notes')"><i class="fas fa-file-alt"></i> Notes</button>
+    <button class="sb-btn" onclick="showPanel('assignments')"><i class="fas fa-tasks"></i> Assignments</button>
+    <div class="sb-section">Reports</div>
+    <button class="sb-btn" onclick="showPanel('attendance')"><i class="fas fa-calendar-check"></i> Attendance</button>
+    <button class="sb-btn" onclick="showPanel('students')"><i class="fas fa-users"></i> Students</button>
+  </aside>
+
+  <div class="content">
+
+    <!-- HOME -->
+    <div class="panel active" id="panel-home">
+      <div class="page-title"><i class="fas fa-home"></i> Dashboard</div>
+      <div class="stats-row">
+        <div class="stat-card" onclick="showPanel('classes')"><div class="sc-icon sci-a"><i class="fas fa-book"></i></div><div><div class="sc-num" id="s-cls">0</div><div class="sc-label">Classrooms</div></div></div>
+        <div class="stat-card" onclick="showPanel('students')"><div class="sc-icon sci-b"><i class="fas fa-users"></i></div><div><div class="sc-num" id="s-stu">0</div><div class="sc-label">Students</div></div></div>
+        <div class="stat-card" onclick="showPanel('assignments')"><div class="sc-icon sci-c"><i class="fas fa-tasks"></i></div><div><div class="sc-num" id="s-asn">0</div><div class="sc-label">Assignments</div></div></div>
+        <div class="stat-card" onclick="showPanel('notes')"><div class="sc-icon sci-d"><i class="fas fa-file-alt"></i></div><div><div class="sc-num" id="s-not">0</div><div class="sc-label">Notes</div></div></div>
+      </div>
+      <div class="page-title" style="font-size:1.1rem;"><i class="fas fa-bolt"></i> Quick Actions</div>
+      <div class="qa-grid">
+        <div class="qa-card" onclick="openModal('modal-create-class')"><i class="fas fa-plus-circle"></i><p>Create Classroom</p></div>
+        <div class="qa-card" onclick="showPanel('schedule')"><i class="fas fa-video"></i><p>Schedule Class</p></div>
+        <div class="qa-card" onclick="showPanel('notes')"><i class="fas fa-file-upload"></i><p>Share Notes</p></div>
+        <div class="qa-card" onclick="openModal('modal-create-asn')"><i class="fas fa-tasks"></i><p>New Assignment</p></div>
+      </div>
+      <div class="page-title" style="font-size:1.1rem;"><i class="fas fa-calendar-day"></i> Upcoming Classes</div>
+      <div class="wcard" id="upcoming-wrap">
+        <div class="empty"><i class="fas fa-calendar"></i><p>No upcoming classes</p></div>
+      </div>
+    </div>
+
+    <!-- CLASSROOMS -->
+    <div class="panel" id="panel-classes">
+      <div class="page-title"><i class="fas fa-book"></i> My Classrooms</div>
+      <div class="alert success" id="cls-ok"></div>
+      <div style="margin-bottom:18px;"><button class="btn btn-primary" onclick="openModal('modal-create-class')"><i class="fas fa-plus"></i> Create Classroom</button></div>
+      <div id="cls-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px;">
+        <div class="empty"><i class="fas fa-book-open"></i><p>No classrooms yet</p></div>
+      </div>
+    </div>
+
+    <!-- SCHEDULE -->
+    <div class="panel" id="panel-schedule">
+      <div class="page-title"><i class="fas fa-calendar-alt"></i> Schedule a Class</div>
+      <div class="wcard" style="max-width:560px;">
+        <div class="alert success" id="sched-ok"></div>
+        <div class="alert error" id="sched-err"></div>
+        <div class="fg"><label>Select Classroom</label><select id="sched-cls"></select></div>
+        <div class="fg"><label>Session Title</label><input type="text" id="sched-title" placeholder="e.g. Introduction to SQL Joins"/></div>
+        <div class="fg"><label>Description</label><textarea id="sched-desc" placeholder="What will be covered..."></textarea></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <div class="fg"><label>Date</label><input type="date" id="sched-date"/></div>
+          <div class="fg"><label>Start Time</label><input type="time" id="sched-start"/></div>
+        </div>
+        <div class="fg"><label>End Time</label><input type="time" id="sched-end"/></div>
+        <button class="btn btn-primary" onclick="scheduleClass()" style="width:100%;justify-content:center;padding:14px;"><i class="fas fa-calendar-check"></i> Schedule Class</button>
+      </div>
+    </div>
+
+    <!-- NOTES -->
+    <div class="panel" id="panel-notes">
+      <div class="page-title"><i class="fas fa-file-alt"></i> Notes</div>
+      <div style="display:grid;grid-template-columns:1fr 1.2fr;gap:22px;">
+        <div class="wcard">
+          <div class="wcard-header"><span class="wcard-title"><i class="fas fa-upload"></i> Upload / Write Notes</span></div>
+          <div class="alert success" id="notes-ok"></div>
+          <div class="alert error" id="notes-err"></div>
+          <div class="fg"><label>Select Classroom</label><select id="notes-cls"></select></div>
+          <div class="fg"><label>Title</label><input type="text" id="notes-title" placeholder="e.g. Chapter 3 - SQL Joins"/></div>
+          <div class="fg"><label>Description (optional)</label><input type="text" id="notes-desc" placeholder="Brief description..."/></div>
+          <div style="margin-bottom:14px;font-size:0.82rem;font-weight:600;color:#555;">Notes Type</div>
+          <div class="notes-type">
+            <div class="nt-opt"><input type="radio" name="nt" id="nt-pdf" value="pdf" checked/><label class="nt-label" for="nt-pdf"><i class="fas fa-file-pdf"></i><span>PDF Upload</span></label></div>
+            <div class="nt-opt"><input type="radio" name="nt" id="nt-text" value="text"/><label class="nt-label" for="nt-text"><i class="fas fa-pencil-alt"></i><span>Write Text</span></label></div>
+          </div>
+          <div id="pdf-section"><div class="fg"><label>PDF File</label><input type="file" id="notes-pdf" accept=".pdf" style="cursor:pointer;"/></div></div>
+          <div id="text-section" style="display:none;"><div class="fg"><label>Write Your Notes</label><textarea id="notes-text" rows="8" placeholder="Write your notes here...&#10;&#10;You can include:&#10;- Key concepts&#10;- Formulas&#10;- Examples&#10;- Summary"></textarea></div></div>
+          <button class="btn btn-primary" onclick="uploadNotes()" style="width:100%;justify-content:center;"><i class="fas fa-share"></i> Share Notes</button>
+        </div>
+        <div>
+          <div class="wcard-header"><span class="wcard-title"><i class="fas fa-list"></i> Shared Notes</span>
+            <select id="notes-filter-cls" onchange="loadNotesList()" style="padding:8px 12px;border:1.5px solid #e8e8e8;border-radius:8px;font-family:'Poppins',sans-serif;font-size:0.82rem;outline:none;"></select>
+          </div>
+          <div id="notes-list"><div class="empty"><i class="fas fa-file"></i><p>No notes yet</p></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ASSIGNMENTS -->
+    <div class="panel" id="panel-assignments">
+      <div class="page-title"><i class="fas fa-tasks"></i> Assignments</div>
+      <div style="margin-bottom:18px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+        <button class="btn btn-primary" onclick="openModal('modal-create-asn')"><i class="fas fa-plus"></i> Create Assignment</button>
+        <select id="asn-filter-cls" onchange="loadAssignments()" style="padding:10px 14px;border:1.5px solid #e8e8e8;border-radius:10px;font-family:'Poppins',sans-serif;font-size:0.85rem;outline:none;"></select>
+      </div>
+      <div id="asn-list"><div class="empty"><i class="fas fa-tasks"></i><p>No assignments yet</p></div></div>
+    </div>
+
+    <!-- ATTENDANCE -->
+    <div class="panel" id="panel-attendance">
+      <div class="page-title"><i class="fas fa-calendar-check"></i> Attendance</div>
+      <div class="wcard" style="margin-bottom:20px;">
+        <div style="display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap;">
+          <div class="fg" style="flex:1;margin-bottom:0;min-width:200px;"><label>Select Classroom</label><select id="att-cls"></select></div>
+          <button class="btn btn-success" onclick="sendWeeklyReport()"><i class="fas fa-paper-plane"></i> Send Weekly Report (n8n)</button>
+        </div>
+      </div>
+      <div id="att-report"><div class="empty"><i class="fas fa-chart-bar"></i><p>Select classroom to view attendance</p></div></div>
+    </div>
+
+    <!-- STUDENTS -->
+    <div class="panel" id="panel-students">
+      <div class="page-title"><i class="fas fa-users"></i> Students</div>
+      <div class="wcard" style="margin-bottom:20px;">
+        <div style="display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap;">
+          <div class="fg" style="flex:1;margin-bottom:0;min-width:200px;"><label>Select Classroom</label><select id="stu-cls" onchange="loadStudents()"></select></div>
+          <button class="btn btn-primary" onclick="openModal('modal-add-stu')"><i class="fas fa-user-plus"></i> Add Student</button>
+        </div>
+      </div>
+      <div class="alert success" id="stu-ok"></div>
+      <div id="stu-list"><div class="empty"><i class="fas fa-users"></i><p>Select classroom to view students</p></div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="modal-bg" id="modal-create-class">
+  <div class="modal">
+    <div class="modal-title">Create Classroom <button class="modal-close" onclick="closeModal('modal-create-class')"><i class="fas fa-times"></i></button></div>
+    <div class="alert error" id="cc-err"></div>
+    <div class="fg"><label>Classroom Name</label><input type="text" id="cc-name" placeholder="e.g. Computer Science Batch A"/></div>
+    <div class="fg"><label>Subject</label><input type="text" id="cc-subject" placeholder="e.g. Computer Science"/></div>
+    <div class="fg"><label>Description</label><textarea id="cc-desc" placeholder="Brief description..."></textarea></div>
+    <div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('modal-create-class')">Cancel</button><button class="btn btn-primary" onclick="createClassroom()"><i class="fas fa-plus"></i> Create</button></div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modal-add-stu">
+  <div class="modal">
+    <div class="modal-title">Add Student <button class="modal-close" onclick="closeModal('modal-add-stu')"><i class="fas fa-times"></i></button></div>
+    <div class="alert error" id="as-err"></div>
+    <div class="alert success" id="as-ok"></div>
+    <div class="fg"><label>Student Email Address</label><input type="email" id="as-email" placeholder="student@example.com"/></div>
+    <div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('modal-add-stu')">Cancel</button><button class="btn btn-primary" onclick="addStudent()"><i class="fas fa-user-plus"></i> Add</button></div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modal-create-asn">
+  <div class="modal">
+    <div class="modal-title">Create Assignment <button class="modal-close" onclick="closeModal('modal-create-asn')"><i class="fas fa-times"></i></button></div>
+    <div class="alert error" id="ca-err"></div>
+    <div class="fg"><label>Classroom</label><select id="ca-cls"></select></div>
+    <div class="fg"><label>Title</label><input type="text" id="ca-title" placeholder="Assignment title"/></div>
+    <div class="fg"><label>Instructions</label><textarea id="ca-desc" placeholder="Describe the assignment..."></textarea></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="fg"><label>Due Date & Time</label><input type="datetime-local" id="ca-due"/></div>
+      <div class="fg"><label>Total Marks</label><input type="number" id="ca-marks" value="100"/></div>
+    </div>
+    <div class="fg"><label>Attachment PDF (optional)</label><input type="file" id="ca-file" accept=".pdf"/></div>
+    <div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('modal-create-asn')">Cancel</button><button class="btn btn-primary" onclick="createAssignment()"><i class="fas fa-paper-plane"></i> Post</button></div>
+  </div>
+</div>
+
+<script>
+const API='http://localhost:5000/api';
+const token=localStorage.getItem('token');
+const user=JSON.parse(localStorage.getItem('user')||'null');
+let classrooms=[];
+
+if(!token||!user||user.role!=='teacher'){
+    localStorage.clear();
+    window.location.href='/login.html';
+}
+document.getElementById('hName').textContent=user.full_name;
+document.getElementById('hUid').textContent=user.unique_id;
+document.getElementById('hAvatar').textContent=user.full_name[0].toUpperCase();
+
+const H=()=>({Authorization:`Bearer ${token}`,'Content-Type':'application/json'});
+const HF=()=>({Authorization:`Bearer ${token}`});
+
+function showPanel(name){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById(`panel-${name}`).classList.add('active');
+  document.querySelectorAll('.sb-btn').forEach(b=>b.classList.remove('active'));
+  const map={home:0,classes:1,schedule:2,notes:3,assignments:4,attendance:5,students:6};
+  document.querySelectorAll('.sb-btn')[map[name]]?.classList.add('active');
+  if(name==='home') loadHome();
+  if(name==='classes') loadClassrooms();
+  if(name==='notes'){loadDropdowns();loadNotesList();}
+  if(name==='assignments'){loadDropdowns();loadAssignments();}
+  if(name==='attendance') loadDropdowns();
+  if(name==='students') loadDropdowns();
+  if(name==='schedule') loadDropdowns();
+}
+
+function openModal(id){document.getElementById(id).classList.add('open');loadDropdowns();}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+
+function showAlert(id,msg,type='error'){
+  const el=document.getElementById(id);if(!el)return;
+  el.innerHTML=`<i class="fas fa-${type==='error'?'exclamation-circle':'check-circle'}"></i> ${msg}`;
+  el.className=`alert ${type} show`;
+  setTimeout(()=>el.classList.remove('show'),4000);
+}
+
+async function loadHome(){
+  const res=await fetch(`${API}/classes/teacher`,{headers:H()});
+  const data=await res.json();
+  if(!data.success)return;
+  classrooms=data.classrooms;
+  document.getElementById('s-cls').textContent=classrooms.length;
+  document.getElementById('s-stu').textContent=classrooms.reduce((a,c)=>a+(c.student_count||0),0);
+
+  let sessions=[];
+  for(const c of classrooms.slice(0,3)){
+    const r=await fetch(`${API}/classes/${c.id}/sessions`,{headers:H()});
+    const d=await r.json();
+    if(d.success) sessions=sessions.concat(d.classes.filter(s=>s.status!=='completed').map(s=>({...s,classroom_name:c.name})));
+  }
+  sessions.sort((a,b)=>new Date(a.scheduled_date+' '+a.start_time)-new Date(b.scheduled_date+' '+b.start_time));
+
+  const wrap=document.getElementById('upcoming-wrap');
+  if(sessions.length===0){wrap.innerHTML='<div class="empty"><i class="fas fa-calendar"></i><p>No upcoming classes. Schedule one!</p></div>';return;}
+  wrap.innerHTML=`<div class="tbl-wrap"><table><thead><tr><th>Session</th><th>Classroom</th><th>Date & Time</th><th>Status</th><th>Action</th></tr></thead><tbody>
+  ${sessions.map(s=>`<tr>
+    <td style="font-weight:600">${s.title}</td>
+    <td>${s.classroom_name}</td>
+    <td>${s.scheduled_date} ${s.start_time}</td>
+    <td><span class="bdg bdg-${s.status==='live'?'live':s.status==='upcoming'?'blue':'green'}">${s.status==='live'?'🔴 LIVE':s.status}</span></td>
+    <td style="display:flex;gap:6px;">
+      ${s.status==='upcoming'?`<button class="btn btn-success btn-sm" onclick="startClass(${s.id})"><i class="fas fa-play"></i> Start</button>`:''}
+      ${s.status==='live'?`<button class="btn btn-danger btn-sm" onclick="endClass(${s.id})"><i class="fas fa-stop"></i> End</button>
+      <a href="/classroom.html?session=${s.id}" target="_blank" class="btn btn-primary btn-sm" style="text-decoration:none"><i class="fas fa-video"></i> Open</a>`:''}
+    </td>
+  </tr>`).join('')}
+  </tbody></table></div>`;
+}
+
+async function loadClassrooms(){
+  const res=await fetch(`${API}/classes/teacher`,{headers:H()});
+  const data=await res.json();
+  if(!data.success)return;
+  classrooms=data.classrooms;
+  const grid=document.getElementById('cls-grid');
+  if(classrooms.length===0){grid.innerHTML='<div class="empty" style="grid-column:1/-1"><i class="fas fa-book-open"></i><p>No classrooms yet. Create one!</p></div>';return;}
+  grid.innerHTML=classrooms.map(c=>`
+    <div class="wcard" style="margin-bottom:0;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+        <span style="background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:4px 12px;border-radius:50px;font-size:0.72rem;font-weight:700">${c.classroom_code}</span>
+      </div>
+      <div style="font-size:1rem;font-weight:700;color:#333;margin-bottom:4px">${c.name}</div>
+      <div style="font-size:0.82rem;color:#999;margin-bottom:14px">${c.subject}</div>
+      <div style="display:flex;gap:16px;margin-bottom:14px;">
+        <span style="font-size:0.8rem;color:#666"><i class="fas fa-users" style="color:#667eea;margin-right:4px"></i>${c.student_count||0} students</span>
+        <span style="font-size:0.8rem;color:#666"><i class="fas fa-calendar" style="color:#667eea;margin-right:4px"></i>${new Date(c.created_at).toLocaleDateString()}</span>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-outline btn-sm" onclick="currentCls=${c.id};showPanel('students')"><i class="fas fa-users"></i> Students</button>
+        <button class="btn btn-primary btn-sm" onclick="currentCls=${c.id};openModal('modal-add-stu')"><i class="fas fa-user-plus"></i> Add</button>
+      </div>
+    </div>`).join('');
+}
+
+let currentCls=null;
+
+async function createClassroom(){
+  const name=document.getElementById('cc-name').value.trim();
+  const subject=document.getElementById('cc-subject').value.trim();
+  const description=document.getElementById('cc-desc').value.trim();
+  if(!name||!subject)return showAlert('cc-err','Name and subject required.');
+  const res=await fetch(`${API}/classes/create`,{method:'POST',headers:H(),body:JSON.stringify({name,subject,description})});
+  const data=await res.json();
+  if(data.success){closeModal('modal-create-class');showAlert('cls-ok',`Classroom created! Code: ${data.code}`,'success');loadClassrooms();loadDropdowns();}
+  else showAlert('cc-err',data.message);
+}
+
+async function addStudent(){
+  const classroom_id=currentCls||classrooms[0]?.id;
+  const student_email=document.getElementById('as-email').value.trim();
+  if(!student_email)return showAlert('as-err','Student email required.');
+  const res=await fetch(`${API}/classes/add-student`,{method:'POST',headers:H(),body:JSON.stringify({classroom_id,student_email})});
+  const data=await res.json();
+  if(data.success){showAlert('as-ok',data.message,'success');document.getElementById('as-email').value='';loadStudents();}
+  else showAlert('as-err',data.message);
+}
+
+async function loadStudents(){
+  const sel=document.getElementById('stu-cls');
+  if(!sel.value)return;
+  const res=await fetch(`${API}/classes/${sel.value}/students`,{headers:H()});
+  const data=await res.json();
+  const container=document.getElementById('stu-list');
+  if(!data.success||data.students.length===0){container.innerHTML='<div class="empty"><i class="fas fa-users"></i><p>No students enrolled</p></div>';return;}
+  container.innerHTML=`<div class="tbl-wrap"><table><thead><tr><th>Name</th><th>Student ID</th><th>Email</th><th>Enrolled</th><th>Action</th></tr></thead><tbody>
+  ${data.students.map(s=>`<tr>
+    <td style="font-weight:600">${s.full_name}</td>
+    <td><span style="color:#667eea;font-weight:700">${s.unique_id}</span></td>
+    <td>${s.email}</td>
+    <td>${new Date(s.enrolled_at).toLocaleDateString()}</td>
+    <td><button class="btn btn-danger btn-sm" onclick="removeStudent(${sel.value},${s.id})"><i class="fas fa-user-minus"></i></button></td>
+  </tr>`).join('')}
+  </tbody></table></div>`;
+}
+
+async function removeStudent(cls,sid){
+  if(!confirm('Remove this student?'))return;
+  await fetch(`${API}/classes/remove-student`,{method:'POST',headers:H(),body:JSON.stringify({classroom_id:cls,student_id:sid})});
+  showAlert('stu-ok','Student removed.','success');loadStudents();
+}
+
+async function scheduleClass(){
+  const classroom_id=document.getElementById('sched-cls').value;
+  const title=document.getElementById('sched-title').value.trim();
+  const description=document.getElementById('sched-desc').value.trim();
+  const scheduled_date=document.getElementById('sched-date').value;
+  const start_time=document.getElementById('sched-start').value;
+  const end_time=document.getElementById('sched-end').value;
+  if(!classroom_id||!title||!scheduled_date||!start_time||!end_time)return showAlert('sched-err','All fields required.');
+  const res=await fetch(`${API}/classes/schedule`,{method:'POST',headers:H(),body:JSON.stringify({classroom_id,title,description,scheduled_date,start_time,end_time})});
+  const data=await res.json();
+  if(data.success) showAlert('sched-ok','Class scheduled successfully!','success');
+  else showAlert('sched-err',data.message);
+}
+
+async function startClass(sid){
+  await fetch(`${API}/classes/session/${sid}/start`,{method:'PUT',headers:H()});
+  loadHome();
+}
+async function endClass(sid){
+  if(!confirm('End this live class?'))return;
+  await fetch(`${API}/classes/session/${sid}/end`,{method:'PUT',headers:H()});
+  loadHome();
+}
+
+// Notes type toggle
+document.querySelectorAll('input[name="nt"]').forEach(r=>{
+  r.addEventListener('change',()=>{
+    const isPdf=document.getElementById('nt-pdf').checked;
+    document.getElementById('pdf-section').style.display=isPdf?'block':'none';
+    document.getElementById('text-section').style.display=isPdf?'none':'block';
+  });
+});
+
+async function uploadNotes(){
+  const classroom_id=document.getElementById('notes-cls').value;
+  const title=document.getElementById('notes-title').value.trim();
+  const description=document.getElementById('notes-desc').value.trim();
+  const isPdf=document.getElementById('nt-pdf').checked;
+  if(!classroom_id||!title)return showAlert('notes-err','Classroom and title required.');
+  
+  if(isPdf){
+    const file=document.getElementById('notes-pdf').files[0];
+    if(!file)return showAlert('notes-err','Please select a PDF file.');
+    const form=new FormData();
+    form.append('classroom_id',classroom_id);form.append('title',title);
+    form.append('description',description);form.append('pdf',file);
+    const res=await fetch(`${API}/notes/upload`,{method:'POST',headers:HF(),body:form});
+    const data=await res.json();
+    if(data.success){showAlert('notes-ok','Notes uploaded successfully!','success');loadNotesList();}
+    else showAlert('notes-err',data.message);
+  } else {
+    const content=document.getElementById('notes-text').value.trim();
+    if(!content)return showAlert('notes-err','Please write some notes.');
+    // For text notes — save as a text file wrapped in PDF-like API
+    const blob=new Blob([content],{type:'text/plain'});
+    const file=new File([blob],`${title}.txt`,{type:'text/plain'});
+    const form=new FormData();
+    form.append('classroom_id',classroom_id);form.append('title',title);
+    form.append('description',description||'Text Notes');form.append('pdf',file);
+    // We send as multipart — backend accepts any file
+    const res=await fetch(`${API}/notes/upload`,{method:'POST',headers:HF(),body:form});
+    const data=await res.json();
+    if(data.success){showAlert('notes-ok','Notes shared successfully!','success');document.getElementById('notes-text').value='';loadNotesList();}
+    else showAlert('notes-err',data.message);
+  }
+}
+
+async function loadNotesList(){
+  const sel=document.getElementById('notes-filter-cls');
+  if(!sel||!sel.value)return;
+  const res=await fetch(`${API}/notes/${sel.value}`,{headers:H()});
+  const data=await res.json();
+  const container=document.getElementById('notes-list');
+  if(!data.success||data.notes.length===0){container.innerHTML='<div class="empty"><i class="fas fa-file"></i><p>No notes shared yet</p></div>';return;}
+  container.innerHTML=data.notes.map(n=>`
+    <div class="item-card">
+      <h4><i class="fas fa-${n.file_name.endsWith('.txt')?'align-left':'file-pdf'}"></i> ${n.title}</h4>
+      <p><i class="fas fa-info-circle"></i>${n.description||'—'}</p>
+      <p><i class="fas fa-hdd"></i>${n.file_size}KB &nbsp;|&nbsp; <i class="fas fa-download"></i> ${n.download_count} downloads</p>
+      <p><i class="fas fa-clock"></i>${new Date(n.created_at).toLocaleString()}</p>
+      <div class="item-actions">
+        <a href="${API}/notes/download/${n.id}" class="btn btn-primary btn-sm" style="text-decoration:none"><i class="fas fa-download"></i> Download</a>
+        <button class="btn btn-danger btn-sm" onclick="deleteNote(${n.id})"><i class="fas fa-trash"></i></button>
+      </div>
+    </div>`).join('');
+}
+
+async function deleteNote(id){
+  if(!confirm('Delete this note?'))return;
+  await fetch(`${API}/notes/${id}`,{method:'DELETE',headers:H()});
+  loadNotesList();
+}
+
+async function createAssignment(){
+  const classroom_id=document.getElementById('ca-cls').value;
+  const title=document.getElementById('ca-title').value.trim();
+  const description=document.getElementById('ca-desc').value.trim();
+  const due_date=document.getElementById('ca-due').value;
+  const total_marks=document.getElementById('ca-marks').value;
+  const file=document.getElementById('ca-file').files[0];
+  if(!classroom_id||!title||!description||!due_date)return showAlert('ca-err','Required fields missing.');
+  const form=new FormData();
+  form.append('classroom_id',classroom_id);form.append('title',title);
+  form.append('description',description);form.append('due_date',due_date);
+  form.append('total_marks',total_marks);
+  if(file) form.append('pdf',file);
+  const res=await fetch(`${API}/assignments/create`,{method:'POST',headers:HF(),body:form});
+  const data=await res.json();
+  if(data.success){closeModal('modal-create-asn');loadAssignments();alert('✅ Assignment created!');}
+  else showAlert('ca-err',data.message);
+}
+
+async function loadAssignments(){
+  const sel=document.getElementById('asn-filter-cls');
+  if(!sel||!sel.value)return;
+  const res=await fetch(`${API}/assignments/${sel.value}`,{headers:H()});
+  const data=await res.json();
+  const container=document.getElementById('asn-list');
+  if(!data.success||data.assignments.length===0){container.innerHTML='<div class="empty"><i class="fas fa-tasks"></i><p>No assignments yet</p></div>';return;}
+  container.innerHTML=`<div class="tbl-wrap"><table><thead><tr><th>Title</th><th>Due Date</th><th>Marks</th><th>Submissions</th><th>Status</th></tr></thead><tbody>
+  ${data.assignments.map(a=>`<tr>
+    <td style="font-weight:600">${a.title}</td>
+    <td>${new Date(a.due_date).toLocaleString()}</td>
+    <td>${a.total_marks}</td>
+    <td>${a.submission_count||0}</td>
+    <td><span class="bdg bdg-${a.status==='active'?'green':'red'}">${a.status}</span></td>
+  </tr>`).join('')}
+  </tbody></table></div>`;
+}
+
+async function sendWeeklyReport(){
+  const classroom_id=document.getElementById('att-cls').value;
+  if(!classroom_id)return alert('Please select a classroom first.');
+  const res=await fetch(`${API}/attendance/weekly-report`,{method:'POST',headers:H(),body:JSON.stringify({classroom_id})});
+  const data=await res.json();
+  if(data.success){
+    alert('✅ Weekly report sent via n8n!');
+    const container=document.getElementById('att-report');
+    if(data.report.length===0){container.innerHTML='<div class="empty"><i class="fas fa-chart-bar"></i><p>No data for this week</p></div>';return;}
+    container.innerHTML=`<div class="tbl-wrap"><table><thead><tr><th>Student</th><th>ID</th><th>Total</th><th>Present</th><th>Attendance</th></tr></thead><tbody>
+    ${data.report.map(r=>`<tr>
+      <td style="font-weight:600">${r.full_name}</td>
+      <td style="color:#667eea;font-weight:700">${r.unique_id}</td>
+      <td>${r.total_classes}</td>
+      <td>${r.present_count}</td>
+      <td><span class="bdg bdg-${r.percentage>=75?'green':'red'}">${r.percentage}%</span>
+      <div class="att-wrap"><div class="att-fill" style="width:${r.percentage}%"></div></div></td>
+    </tr>`).join('')}
+    </tbody></table></div>`;
+  } else alert('Error: '+data.message);
+}
+
+async function loadDropdowns(){
+  if(classrooms.length===0){
+    const res=await fetch(`${API}/classes/teacher`,{headers:H()});
+    const data=await res.json();
+    if(data.success) classrooms=data.classrooms;
+  }
+  const opts=classrooms.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+  ['sched-cls','notes-cls','notes-filter-cls','asn-filter-cls','att-cls','stu-cls','ca-cls'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.innerHTML=opts||'<option>No classrooms</option>';
+  });
+}
+
+async function loadNotifications(){
+  const res=await fetch(`${API}/notifications`,{headers:H()});
+  const data=await res.json();
+  if(data.success){
+    const unread=data.notifications.filter(n=>!n.is_read).length;
+    document.getElementById('nCount').textContent=unread;
+    await fetch(`${API}/notifications/read`,{method:'PUT',headers:H()});
+  }
+}
+
+function logout(){localStorage.clear();window.location.href='/login.html';}
+loadHome();loadDropdowns();loadNotifications();
+</script>
+</body>
+</html>
