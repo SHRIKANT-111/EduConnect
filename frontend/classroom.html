@@ -118,7 +118,7 @@ header{background:rgba(255,255,255,0.05);padding:12px 20px;display:flex;align-it
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
-const API = 'http://localhost:5000/api';
+const API = `${window.location.origin}/api`;
 const token = localStorage.getItem('token');
 const user = JSON.parse(localStorage.getItem('user') || 'null');
 
@@ -129,7 +129,7 @@ const sessionId = params.get('session');
 
 document.getElementById('myName').textContent = user.full_name;
 
-const socket = io('http://localhost:5000');
+const socket = io();
 const peers = {};
 let localStream = null;
 let micOn = true, camOn = true, handRaised = false;
