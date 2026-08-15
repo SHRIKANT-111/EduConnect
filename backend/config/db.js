@@ -2,6 +2,7 @@ const mysql = require('mysql2');
 const fs = require('fs');
 require('dotenv').config();
 
+const caPath = process.env.DB_SSL_CA || 'C:/Users/lenovo/Downloads/ca.pem';
 const pool = mysql.createPool({
     host: process.env.DB_HOST,
     port: process.env.DB_PORT || 3306,
@@ -12,7 +13,7 @@ const pool = mysql.createPool({
     connectionLimit: 10,
     queueLimit: 0,
     ssl: {
-        ca: fs.readFileSync('C:/Users/lenovo/Downloads/ca.pem')
+        ca: fs.readFileSync(caPath)
     }
 });
 
