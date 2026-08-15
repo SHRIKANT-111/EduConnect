@@ -323,7 +323,7 @@ tr:hover td{background:#fafbff;}
 </div>
 
 <script>
-const API='http://localhost:5000/api';
+const API = `${window.location.origin}/api`;
 const token=localStorage.getItem('token');
 const user=JSON.parse(localStorage.getItem('user')||'null');
 let classrooms=[];
